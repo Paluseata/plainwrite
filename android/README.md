@@ -26,6 +26,10 @@ There are two build variants, like the web downloads:
    For one you can share or keep long term, use Build → Generate Signed App Bundle / APK and create a keystore.
    Keep that keystore: updates must be signed with the same one.
 
+No Android Studio? Run the **Build Android app** workflow from the repository's Actions tab. It builds
+both editions as debug APKs on GitHub's machines (fonts bundled) and puts them under the run's Artifacts.
+The workflow lives at the repository root, in `.github/workflows/build-android.yml`.
+
 ## What the app adds over the PWA
 
 | | PWA in a browser | This app |

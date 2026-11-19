@@ -52,8 +52,9 @@ or a native port.
 
 ## Build it
 
-No Linux, Windows or Mac to build on? Put this folder in a GitHub repository and run the
-**Build desktop apps** workflow (Actions tab): it builds both editions for all three systems.
+No Linux, Windows or Mac to build on? Run the **Build desktop apps** workflow from the repository's
+Actions tab: it builds both editions for all three systems. The workflow lives at the repository root,
+in `.github/workflows/build-desktop.yml`.
 
 
 One-time setup:
@@ -101,4 +102,4 @@ Run it again whenever the files in `www/` are replaced with a newer version of t
 | `src-tauri/tauri.conf.json` | Name, version, app id, icons (English edition) |
 | `src-tauri/tauri.multilingual.conf.json` | What changes for the Multilingual edition |
 | `src-tauri/icons/` | App icons for Windows, macOS and Linux |
-| `.github/workflows/build.yml` | Builds everything on GitHub (Linux, Windows, macOS) |
+| `../.github/workflows/build-desktop.yml` | Builds everything on GitHub (Linux, Windows, macOS), at the repository root |
