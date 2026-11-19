@@ -1,0 +1,16 @@
+{
+  "name": "plainwrite-desktop",
+  "private": true,
+  "version": "1.0.3",
+  "description": "Plainwrite as a desktop app (Tauri 2 shell around the web app)",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "dev:multilingual": "tauri dev --config src-tauri/tauri.multilingual.conf.json",
+    "build": "tauri build",
+    "build:multilingual": "tauri build --config src-tauri/tauri.multilingual.conf.json"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

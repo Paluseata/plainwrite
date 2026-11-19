@@ -1,0 +1,45 @@
+; Engine configuration file.
+; Plainwrite, Godot 3.6 port (core). Open this folder in the Godot 3.6 editor.
+
+config_version=4
+
+[application]
+
+config/name="Plainwrite"
+config/description="Retro minimalist word processor inspired by the AlphaSmart Neo."
+run/main_scene="res://Main.tscn"
+run/low_processor_mode=true
+run/low_processor_mode_sleep_usec=16000
+boot_splash/show_image=false
+boot_splash/bg_color=Color( 0.17, 0.18, 0.17, 1 )
+config/icon="res://icon.png"
+config/quit_on_go_back=false
+config/auto_accept_quit=true
+
+[autoload]
+
+Store="*res://scripts/store.gd"
+
+[display]
+
+window/size/width=1024
+window/size/height=600
+window/size/resizable=true
+window/handheld/orientation="sensor_landscape"
+window/energy_saving/keep_screen_on=false
+
+[gui]
+
+common/drop_mouse_on_gui_input_disabled=true
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=false
+
+[rendering]
+
+quality/driver/driver_name="GLES2"
+quality/driver/fallback_to_gles2=true
+vram_compression/import_etc=true
+environment/default_clear_color=Color( 0.17, 0.18, 0.17, 1 )
+2d/snapping/use_gpu_pixel_snap=true

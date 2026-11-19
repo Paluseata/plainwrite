@@ -1,0 +1,28 @@
+[package]
+name = "plainwrite"
+version = "1.0.3"
+description = "Retro minimalist word processor inspired by the AlphaSmart Neo"
+edition = "2021"
+
+[lib]
+name = "plainwrite_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# macos-private-api: lets the window be see-through on macOS too
+tauri = { version = "2", features = ["macos-private-api"] }
+tauri-plugin-dialog = "2"
+# Send → Type into another program: global Esc to stop, and typing as a keyboard
+tauri-plugin-global-shortcut = "2"
+enigo = "0.2"
+serde = { version = "1", features = ["derive"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

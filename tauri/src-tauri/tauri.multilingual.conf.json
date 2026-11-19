@@ -1,0 +1,7 @@
+{
+  "productName": "Plainwrite Multilingual",
+  "identifier": "app.plainwrite.desktop.multilingual",
+  "build": {
+    "frontendDist": "../www/multilingual"
+  }
+}

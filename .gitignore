@@ -1,0 +1,38 @@
+# Originals and source zips (kept locally, not uploaded)
+origs/
+*.zip
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+target/
+src-tauri/gen/
+.gradle/
+.godot/
+.import/
+export/
+
+# Android
+local.properties
+*.jks
+*.keystore
+*.apk
+*.aab
+
+# Secrets
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+
+# OS and editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
