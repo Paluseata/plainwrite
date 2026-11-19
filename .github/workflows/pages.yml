@@ -1,0 +1,65 @@
+# Publishes the web app (PWA) on GitHub Pages whenever pwa/ changes on main:
+#   https://<user>.github.io/<repo>/english/  and  https://<user>.github.io/<repo>/multilingual/
+# One-time setup: repo Settings → Pages → Build and deployment → Source: GitHub Actions.
+name: Publish web app
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['pwa/**', '.github/workflows/pages.yml']
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble the site
+        run: |
+          mkdir _site
+          cp -r pwa/english _site/english
+          cp -r pwa/multilingual _site/multilingual
+          rm -f _site/*/README.md
+          cat > _site/index.html <<'HTML'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Plainwrite</title>
+          <style>
+            body { background:#121417; color:#d8dcd0; font:16px/1.5 monospace; max-width:32em; margin:4em auto; padding:0 1em; }
+            a { color:#9fd18b; }
+          </style>
+          </head>
+          <body>
+          <h1>Plainwrite</h1>
+          <p>A retro word processor inspired by the AlphaSmart Neo and the King Jim Pomera. Pick an edition:</p>
+          <ul>
+            <li><a href="english/">English</a></li>
+            <li><a href="multilingual/">Multilingual</a> (48 language packs)</li>
+          </ul>
+          <p>Open it once while online, then add it to your home screen. It works offline from then on.</p>
+          </body>
+          </html>
+          HTML
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
