@@ -32,32 +32,30 @@ jobs:
         with:
           node-version: lts/*
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
       - uses: dtolnay/rust-toolchain@stable
 
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: tauri/src-tauri
 
-      - name: Bundle the Google-hosted fonts so the app works offline
-        run: python tools/fetch_fonts.py
-        continue-on-error: true
-
       - run: npm install
       - run: npm run build
+      - name: Keep the English installers
+        shell: bash
+        run: mkdir -p out/english && cp -r src-tauri/target/release/bundle/. out/english/ && rm -rf src-tauri/target/release/bundle
       - run: npm run build:multilingual
+      - name: Keep the Multilingual installers
+        shell: bash
+        run: mkdir -p out/multilingual && cp -r src-tauri/target/release/bundle/. out/multilingual/
 
       - uses: actions/upload-artifact@v4
         with:
-          name: plainwrite-desktop-${{ runner.os }}
+          name: plainwrite-${{ runner.os }}
           path: |
-            tauri/src-tauri/target/release/bundle/deb/*.deb
-            tauri/src-tauri/target/release/bundle/rpm/*.rpm
-            tauri/src-tauri/target/release/bundle/appimage/*.AppImage
-            tauri/src-tauri/target/release/bundle/msi/*.msi
-            tauri/src-tauri/target/release/bundle/nsis/*.exe
-            tauri/src-tauri/target/release/bundle/dmg/*.dmg
+            tauri/out/*/deb/*.deb
+            tauri/out/*/rpm/*.rpm
+            tauri/out/*/appimage/*.AppImage
+            tauri/out/*/msi/*.msi
+            tauri/out/*/nsis/*.exe
+            tauri/out/*/dmg/*.dmg
           if-no-files-found: ignore

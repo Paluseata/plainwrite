@@ -84,13 +84,8 @@ Installers end up in `src-tauri/target/release/bundle/`:
 
 ## Fonts offline
 
-The pixel fonts are bundled already. The other fonts (Terminal, Typewriter, LCD and so on) come from
-Google Fonts while you're online. To bundle them too, run this once with internet access, before
-building:
-
-    python3 tools/fetch_fonts.py
-
-Run it again whenever the files in `www/` are replaced with a newer version of the web app.
+Every font is bundled inside `www/`, so the app needs no connection except to download spelling
+dictionaries and, in the English edition, language packs.
 
 ## Layout
 

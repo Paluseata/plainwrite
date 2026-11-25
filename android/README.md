@@ -12,22 +12,16 @@ There are two build variants, like the web downloads:
 1. **Open** this folder in Android Studio (Koala 2024.1 or newer). Let it sync: it downloads Gradle 8.7,
    the Android Gradle Plugin 8.5 and the AndroidX libraries. If it asks about a missing Gradle wrapper,
    accept its offer to create one, or run `gradle wrapper` once.
-2. **Bundle the fonts** (recommended, once, needs internet):
-   `python3 tools/fetch_fonts.py`
-   This copies the Google-hosted fonts (Jost, VT323, Press Start 2P, Share Tech Mono, Courier Prime,
-   IBM Plex Mono, Tiny5, DotGothic16), keeping only their Latin, Cyrillic and Greek parts, into
-   `assets/www/fonts/`, so the app works with no connection. Plain sans, Home computer and Teletext
-   are already inside. Skip it and those fonts still load whenever the tablet is online.
-3. **Choose the edition**: View → Tool Windows → Build Variants → `englishDebug` or `multilingualDebug`.
-4. **Run on the Tab S3**: Settings → About tablet → Software information → tap *Build number* 7 times,
+2. **Choose the edition**: View → Tool Windows → Build Variants → `englishDebug` or `multilingualDebug`.
+3. **Run on the Tab S3**: Settings → About tablet → Software information → tap *Build number* 7 times,
    then Developer options → USB debugging on. Plug it in and press Run.
-5. **Make an APK file**: Build → Build App Bundle(s) / APK(s) → Build APK(s).
+4. **Make an APK file**: Build → Build App Bundle(s) / APK(s) → Build APK(s).
    You'll find it in `app/build/outputs/apk/english/debug/` (or `multilingual/debug/`).
    For one you can share or keep long term, use Build → Generate Signed App Bundle / APK and create a keystore.
    Keep that keystore: updates must be signed with the same one.
 
 No Android Studio? Run the **Build Android app** workflow from the repository's Actions tab. It builds
-both editions as debug APKs on GitHub's machines (fonts bundled) and puts them under the run's Artifacts.
+both editions as debug APKs on GitHub's machines and puts them under the run's Artifacts.
 The workflow lives at the repository root, in `.github/workflows/build-android.yml`.
 
 ## What the app adds over the PWA
@@ -51,10 +45,12 @@ to move writing across, use Send → Save as text file in one and paste it into 
 
 The web app lives in `app/src/english/assets/www/` and `app/src/multilingual/assets/www/`. To update,
 replace those folders with the contents of `pwa/english/` / `pwa/multilingual/` from the repo root,
-run `tools/fetch_fonts.py` again, and bump `versionCode` in `app/build.gradle.kts`.
+and bump `versionCode` in `app/build.gradle.kts`.
 
 The web app spots the Android shell by `window.PlainwriteAndroid` (see `MainActivity.kt`, class `Bridge`):
-`saveText(name, text)`, `setFullscreen(on)` and `battery()`. The Back button calls the page's `plainwriteBack()`.
+`saveText(name, text)`, `setFullscreen(on)`, `setFocus(on)` / `focusOn()` (focus mode: app pinning, hidden system bars,
+screen kept on) and `battery()`. The Back button calls the page's `plainwriteBack()`, and `plainwriteFocus(on)` tells
+the page when focus mode ends.
 
 ## Which devices it runs on (thrifted ones too)
 
