@@ -1,5 +1,6 @@
 # Builds both Android editions (English and Multilingual) as debug APKs on GitHub's machines.
-# Run it from the Actions tab ("Run workflow"), or push a tag like v1.0.4.
+# Runs by itself whenever android/ or this workflow changes on main, and checks pull requests too.
+# You can also run it from the Actions tab ("Run workflow"), or push a tag like v1.0.8.
 # The APKs appear under the run's Artifacts. Debug APKs install on any device with
 # "Install unknown apps" allowed; they are not signed for the Play Store.
 name: Build Android app
@@ -7,7 +8,16 @@ name: Build Android app
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     tags: ['v*']
+    paths: ['android/**', '.github/workflows/build-android.yml']
+  pull_request:
+    paths: ['android/**', '.github/workflows/build-android.yml']
+
+# a newer push cancels a build of the same branch that's still running
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
