@@ -1,17 +1,20 @@
 package app.plainwrite
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.BatteryManager
+import android.os.Build
 import android.os.Bundle
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
+import android.view.WindowManager
 import android.webkit.WebView
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
@@ -30,7 +33,7 @@ import org.json.JSONObject
  * The page is served from https://appassets.androidplatform.net/assets/www/ (WebViewAssetLoader), a real
  * https origin, so localStorage and IndexedDB (your files, settings, fonts, language packs) work and persist.
  * window.PlainwriteAndroid gives the page what a WebView lacks on its own: saving .txt files,
- * immersive full screen and the battery level. The Back key works like Esc.
+ * immersive full screen, focus mode (app pinning) and the battery level. The Back key works like Esc.
  */
 class MainActivity : ComponentActivity() {
     private lateinit var web: WebView
@@ -143,6 +146,36 @@ class MainActivity : ComponentActivity() {
 
     companion object { const val MIN_CHROMIUM = 60 }
 
+    /** Focus mode: Android's app pinning, with the system bars hidden and the screen kept on. */
+    @Suppress("DEPRECATION")
+    private fun focusOn(): Boolean {
+        val am = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        return if (Build.VERSION.SDK_INT >= 23) am.lockTaskModeState != ActivityManager.LOCK_TASK_MODE_NONE
+        else am.isInLockTaskMode
+    }
+
+    private fun setFocus(on: Boolean) {
+        val c = WindowCompat.getInsetsController(window, web)
+        if (on) {
+            runCatching { startLockTask() }          // Android asks once whether to pin the app
+            c.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            c.hide(WindowInsetsCompat.Type.systemBars())
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            runCatching { stopLockTask() }
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+    }
+
+    // unpinned with Android's own gesture: keep the screen-on flag and the page's Control Panel in step
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (!hasFocus) return
+        val on = focusOn()
+        if (!on) window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        web.evaluateJavascript("window.plainwriteFocus&&plainwriteFocus($on)", null)
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         web.saveState(outState)
@@ -171,6 +204,12 @@ class MainActivity : ComponentActivity() {
                 c.show(WindowInsetsCompat.Type.systemBars())
             }
         }
+
+        @JavascriptInterface
+        fun setFocus(on: Boolean) = runOnUiThread { this@MainActivity.setFocus(on) }
+
+        @JavascriptInterface
+        fun focusOn(): Boolean = this@MainActivity.focusOn()
 
         @JavascriptInterface
         fun battery(): String {

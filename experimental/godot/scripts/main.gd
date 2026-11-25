@@ -88,6 +88,7 @@ func _layout() -> void:
 	_place_backdrop()
 	if kfont:
 		kfont.size = int(clamp(keys_h * 0.36, 11, 30))
+		_power_light()
 	update()
 
 
@@ -279,8 +280,18 @@ func _style_keys() -> void:
 		b.add_color_override("font_color", text)
 		b.add_color_override("font_color_hover", text)
 		b.add_color_override("font_color_pressed", text)
-		if i == 0:          # on/off: text like the other keys, and a little light in the power colour
-			b.icon = _light_icon(_power_colour(base), int(max(6, kfont.size * 0.45)))
+	_power_light()
+
+
+# on/off key: text like the other keys, and a little light in the power colour; dark while the device is off.
+# Sized from the key font, so it's redrawn whenever the layout changes the font size.
+func _power_light() -> void:
+	if key_buttons.empty() or not kfont:
+		return
+	var dv: Dictionary = Store.device()
+	var kt = Color(dv.kt)
+	var lit = _power_colour(Color(dv.keys[0])) if mode != "off" else Color(kt.r, kt.g, kt.b, 0.18)
+	key_buttons[0].icon = _light_icon(lit, int(max(6, kfont.size * 0.45)))
 
 
 # Auto: green made lighter or darker until it stands out from the key; otherwise the colour you chose
@@ -305,7 +316,7 @@ func _light_icon(c: Color, d: int) -> ImageTexture:
 	for y in range(d):
 		for x in range(d):
 			var a = clamp(r - Vector2(x + 0.5 - r, y + 0.5 - r).length() + 0.5, 0.0, 1.0)
-			img.set_pixel(x, y, Color(c.r, c.g, c.b, a))
+			img.set_pixel(x, y, Color(c.r, c.g, c.b, a * c.a))
 	img.unlock()
 	var t = ImageTexture.new()
 	t.create_from_image(img, 0)
@@ -353,6 +364,7 @@ func _restyle() -> void:
 
 func power_on() -> void:
 	mode = "logo"
+	_power_light()           # power light back on
 	powering_off = false
 	lcd.logo_text = "plainwirte" if randi() % 10000 == 0 else "plainwrite"   # the rare misspelt logo
 	_mark_file()
@@ -370,6 +382,7 @@ func power_off() -> void:
 	sync_file()
 	mode = "off"
 	powering_off = false
+	_power_light()           # power light off
 	writer.overtype = false
 	_mark_file()
 	_redraw()

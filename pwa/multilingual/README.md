@@ -1,21 +1,21 @@
 # Plainwrite (PWA)
 
-Plainwrite is a retro minimalist-ish word processor inspired by "writer decks" or portable
-dedicated word processors made between the 1980s and 2000s, like the AlphaSmart Neo and the
-King Jim Pomera. It has eight auto-saving text buffers and works fully offline. Your writing is 
-stored in the browser's local storage on each device and never leaves it.
+Plainwrite is a retro minimalist-ish word processing application.
+It is inspired by numerous "writer decks" or portable dedicated word processing devices
+made between the 1980s and 2000s.
+It uses eight auto-saving files or text buffers, and it even works perfectly offline.
+Your writing is stored in the browser's local storage on each device and never leaves it.
 
 ## AI disclosure
 
-This application was written with the assistance of Claude, an artificial intelligence
+This application was written using the assistance of Claude, an artificial intelligence
 large language model by Anthropic.
-In other words, THIS IS VIBE CODED AI SLOP!!
 
 ## Editions
 
-- **English** (`pwa/english`): English-only single language edition. Other languages can
+- **English** (plainwrite-english.zip): English-only single language edition. Other languages can
   be added later with Control Panel → Language packs… → Import language pack… and a pack file.
-- **Multilingual** (`pwa/multilingual`): The same app, plus 48 language packs in `langs/`.
+- **Multilingual** (plainwrite-multilingual.zip): The same app, plus 48 language packs in `langs/`.
   On first start, every pack is installed and the menu language follows the system language when
   there's a match, otherwise English is used. Packs can be ticked off and on again in Control Panel.
 
@@ -48,4 +48,5 @@ It is a modified version, so it is renamed as the licence asks.
 Jost by Indestructible Type (SIL Open Font License 1.1) is bundled for the device's logo, keys and menus, cut down to Latin and Cyrillic.
 Also bundled, cut down to Latin, Greek and Cyrillic where they have them, all under the SIL Open Font License 1.1:
 VT323 by Peter Hull, Press Start 2P by CodeMan38, Tiny5 by Stefie Justprince, IBM Plex Mono (Medium) by IBM
-and Courier Prime (Bold) by Alan Dague-Greene. Share Tech Mono (the Terminal font) still loads from Google Fonts.
+Courier Prime (Bold) by Alan Dague-Greene, and Share Tech Mono (the Terminal font, unmodified) by Carrois Type Design.
+Nothing is loaded from Google Fonts any more.

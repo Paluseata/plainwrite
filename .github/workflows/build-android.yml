@@ -23,18 +23,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
       # The repo has no Gradle wrapper jar, so this installs Gradle 8.7 (the version the project asks for).
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
-
-      - name: Bundle the Google-hosted fonts so the app works offline
-        run: python tools/fetch_fonts.py
-        continue-on-error: true
 
       - name: Build englishDebug and multilingualDebug
         run: gradle assembleDebug --no-daemon

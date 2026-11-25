@@ -14,9 +14,6 @@
 <link rel="preload" href="plain-sans.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="home-computer.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root{--lcd:#b3bca3;--lcd-off:#8a927d;--ink:#1b2317;--keytxt:#e6e8eb;
   --b1:#30353d;--b2:#1e2227;--brand:#7d858f;--brandb:#a9b3bf;--bezel:#14171b;--k1:#4a515b;--k2:#383d45;--kt:#e6e8eb;--ksh:#111316;
@@ -75,6 +72,9 @@ body.fs .lcd{flex:1;aspect-ratio:auto;height:auto!important}
 .line{height:var(--lh);line-height:var(--lh);overflow:hidden}
 .inv,.cur{background:var(--ink);color:var(--lcd)}
 .blk{display:block}
+/* Caps Lock indicator: a solid block in the bottom right corner of the screen (inverse on an inverted bottom line) */
+.capsblk{position:absolute;right:0;bottom:0;height:var(--lh);background:var(--ink);pointer-events:none}
+.capsblk.onv{background:var(--lcd)}
 /* WebViews without flex gap (Chromium < 84) */
 html.nofg .status>*+*{margin-left:12px}
 html.nofg .pchead>*+*,html.nofg .sheet .actions>*+*{margin-left:8px}html.nofg .sheet .row>*+*{margin-left:10px}html.nofg .kr>*+*{margin-left:4px}
@@ -120,6 +120,10 @@ body.fk-pressed .k.file.active{transform:translateY(calc(var(--key-h,3px)*.67));
 body.fk-dot .k.file::before{content:"";position:absolute;top:4px;right:6px;width:5px;height:5px;border-radius:50%;background:rgba(0,0,0,.28);box-shadow:inset 0 1px 1px rgba(0,0,0,.35)}
 body.fk-dot .k.file.active::before{background:var(--pwr);box-shadow:0 0 6px var(--pwr)}
 .k.power{color:var(--kt)}.k.power small{color:var(--pwr);opacity:1}
+/* power light: off while the device is off; blinks in standby (after an automatic power off, while any key can wake it) */
+body.pw-off .k.power small{color:var(--kt);opacity:.18}
+body.pw-standby .k.power small{animation:pwBlink 2s steps(1,end) infinite}
+@keyframes pwBlink{0%{color:var(--pwr);opacity:1}50%{color:var(--kt);opacity:.18}}
 .k.nav{background:linear-gradient(var(--n1),var(--n2));font-size:14px}
 /* arrows and ↵ are drawn as pictures: those characters are tiny or missing in many phone fonts */
 .k.nav svg.ret{width:20px;height:14px;vertical-align:-2px}
@@ -170,8 +174,10 @@ html.deskwin,html.deskwin body{background:transparent!important}
 html.deskwin #wall{display:none}
 html.deskwin body{min-height:0;overflow:hidden;padding:var(--wpad-t,24px) var(--wpad-s,60px) var(--wpad-b,96px)}
 html.deskwin .device{width:var(--devmax);max-width:none;cursor:default}
-@media (pointer:fine){html:not(.deskwin) body:not(.fs) .device{cursor:grab}html.dragging,html.dragging *{cursor:grabbing!important;user-select:none}
+@media (pointer:fine){html:not(.deskwin):not(.devfixed) body:not(.fs) .device{cursor:grab}html.dragging,html.dragging *{cursor:grabbing!important;user-select:none}
   html:not(.deskwin) body:not(.fs) .device :is(.k,.lcd,.bezel,button){cursor:auto}}
+html.dragging .device{transition:none}
+html.dragging .brandbar{-webkit-user-select:none;user-select:none}
 html.deskwin .hint{display:none}
 html.deskwin .pc{width:var(--devmax);max-width:none}
 html.deskwin .sheet{position:relative;left:auto;bottom:auto;transform:none;width:var(--devmax);max-width:none;margin:14px 0 0;box-sizing:border-box;
@@ -211,6 +217,7 @@ html.deskwin .sheet{position:relative;left:auto;bottom:auto;transform:none;width
 @font-face{font-family:"Plain Sans";src:url("plain-sans.ttf") format("truetype");font-display:swap}
 @font-face{font-family:"Home Computer";src:url("home-computer.ttf") format("truetype");font-display:swap}
 @font-face{font-family:"VT323";src:url("vt323.ttf") format("truetype");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Share Tech Mono";src:url("share-tech-mono.ttf") format("truetype");font-display:swap}
 @font-face{font-family:"Press Start 2P";src:url("press-start-2p.ttf") format("truetype");font-weight:100 900;font-display:swap}
 @font-face{font-family:"Tiny5";src:url("tiny5.ttf") format("truetype");font-weight:100 900;font-display:swap}
 @font-face{font-family:"IBM Plex Mono";src:url("ibm-plex-mono-medium.ttf") format("truetype");font-weight:100 900;font-display:swap}
@@ -233,6 +240,7 @@ html.deskwin .sheet{position:relative;left:auto;bottom:auto;transform:none;width
       <textarea id="ta" class="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Document text"></textarea>
       <input type="file" id="sndFile" accept="audio/*,.wav,.mp3,.ogg,.m4a,.aac,.flac" hidden>
       <input type="file" id="packFile" accept=".json,application/json" hidden>
+      <input type="file" id="txtFile" accept=".txt,.text,.md,text/plain" hidden>
       <input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2" hidden>
       <form id="cmdForm" autocomplete="off"><input id="cmd" class="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-label="Command input"></form>
     </div>
@@ -281,13 +289,14 @@ html.deskwin .sheet{position:relative;left:auto;bottom:auto;transform:none;width
   <div class="helpbody">
     <h3>Getting started</h3>
     <p>Tap the screen and type, or type on a keyboard. Your writing saves as you type. There is no Save button. Files are kept in this browser on this device.</p>
-    <p>On a computer, drag the device by its body to move it around the page. Double-click the body to put it back.</p>
+    <p>You can move the device around the page. With a mouse, drag its body. On a touch screen, press and hold the strip with the Plainwrite logo, then move your finger. Double-click or double-tap that strip to put it back. <b>Control Panel → Position</b> makes it Movable or Fixed, and <b>Place</b> puts it in a preset spot: centre, top, bottom or a corner.</p>
 
     <h3>Eight files</h3>
     <ul>
       <li>Keys <kbd>file 1</kbd> to <kbd>file 8</kbd> each open a separate file. The screen shows "File 3 selected" when you switch.</li>
       <li>Each file keeps its own cursor position.</li>
       <li><kbd>clear file</kbd> erases the current file. Press <kbd>Y</kbd> to confirm or <kbd>N</kbd> to cancel.</li>
+      <li>While Caps Lock is on, a solid block shows in the bottom right corner of the screen.</li>
       <li>Keyboard: <kbd>F1</kbd> to <kbd>F8</kbd>, or <kbd>Alt</kbd>+<kbd>1</kbd> to <kbd>8</kbd>.</li>
     </ul>
 
@@ -305,7 +314,7 @@ html.deskwin .sheet{position:relative;left:auto;bottom:auto;transform:none;width
     <ul>
       <li><kbd>on/off</kbd> switches the device off and on. The screen goes blank and your place is kept. Other keys do nothing while it is off.</li>
       <li><kbd>print</kbd> is not available yet.</li>
-      <li><kbd>spell check</kbd> checks the file from the cursor to the end, then from the top. For each misspelt word, <kbd>←</kbd> <kbd>→</kbd> choose a suggestion, Skip or Add to dictionary, and <kbd>↵</kbd> applies it. <kbd>esc</kbd> stops. It uses the dictionary for your menu language, downloaded the first time and kept on this device, so it works offline after that. Dictionaries come from the Hunspell project used by LibreOffice. Finnish, Indonesian, Malay, Filipino, Māori, Tetun, Uzbek, toki pona, Belarusian, Kazakh, Kyrgyz and Tajik have none yet.</li>
+      <li><kbd>spell check</kbd> checks the file from the cursor to the end, then from the top. For each misspelt word, <kbd>←</kbd> <kbd>→</kbd> choose a suggestion, Skip or Add to dictionary, and <kbd>↵</kbd> applies it. <kbd>esc</kbd> stops. It uses the dictionary for your menu language, downloaded the first time and kept on this device, so it works offline after that. Dictionaries come from the Hunspell project used by LibreOffice. Filipino uses a Tagalog word list from the tl-wordlist project. Finnish, Indonesian, Malay, Māori, Tetun, Uzbek, toki pona, Belarusian, Kazakh, Kyrgyz and Tajik have none yet.</li>
       <li><kbd>find</kbd>: type a word and press <kbd>↵</kbd>. Press <kbd>find</kbd> and <kbd>↵</kbd> again for the next match.</li>
       <li><kbd>home</kbd> and <kbd>end</kbd> go to the start or end of the line.</li>
       <li><kbd>applets</kbd> opens the applet menu.</li>
@@ -320,7 +329,7 @@ html.deskwin .sheet{position:relative;left:auto;bottom:auto;transform:none;width
       <li><b>Writer</b>: the word processor.</li>
       <li><b>Calculator</b>: + − * / ( ) ^ and %. Type <kbd>ans</kbd>, or start with an operator such as <kbd>/4</kbd>, to use the last answer.</li>
       <li><b>Typing Tutor</b>: home row, top row, bottom row, numbers and sentences. Five lines per lesson, then your speed and accuracy.</li>
-      <li><b>Games</b>: Snake, Dino Jump, Same &amp; Opposite and Simon Says.
+      <li><b>Games</b>: Snake, Dino Jump, Same &amp; Opposite and Simon Says. Games are off at first. Switch them on in <b>Control Panel → Games</b> and they appear in this menu.
         <ul>
           <li>Each game has its own difficulty: Easy, Normal or Hard. In the Games menu, press <kbd>←</kbd> <kbd>→</kbd> on a game, or tap the right end of its line. Best scores are kept per difficulty.</li>
           <li><b>Snake</b>: steer with the arrows and eat the dots. Avoid the walls and your tail. It speeds up as it grows.</li>
@@ -347,7 +356,7 @@ html.deskwin .sheet{position:relative;left:auto;bottom:auto;transform:none;width
     <ul>
       <li>The menus come in 15 forms of English: US, UK, Ireland, Canada, Australia, New Zealand, South Africa, India, Singapore, Malaysia, Hong Kong, Philippines, Nigeria, Kenya and Jamaica. They differ in spelling (color or colour), date order and number grouping. On first start, Plainwrite picks the one that matches your system's region. Change it in <b>Control Panel → Menu language</b>.</li>
       <li>Other languages come as language packs. The English edition has none installed. The Multilingual edition has 48.</li>
-      <li><b>Control Panel → Language packs</b>: <kbd>↵</kbd> installs or removes a pack. <b>Import language pack…</b> adds a pack from a .json file, such as one from the <i>langs</i> folder of the Multilingual download. <i>all.json</i> adds every pack.</li>
+      <li><b>Control Panel → Language packs</b>: <kbd>↵</kbd> installs or removes a pack. In the English edition the list of packs is downloaded when you open this screen, so it needs an internet connection the first time; installed packs then work offline. <b>Import language pack…</b> adds a pack from a .json file, such as one from the <i>langs</i> folder of the Multilingual download. <i>all.json</i> adds every pack.</li>
       <li>Latin script: Bahasa Indonesia, Bahasa Melayu, Bosanski, Català, Čeština, Crnogorski, Cymraeg, Deutsch, Eesti, Español, Esperanto, Euskara, Filipino, Français, Gaeilge, Gàidhlig, Hrvatski, Italiano, Latviešu, Lietuvių, Magyar, Māori, Nederlands, Norsk, Oʻzbekcha, Polski, Português, Română, Slovenčina, Slovenščina, Srpski (latinica), Suomi, Svenska, Tetun, toki pona, Türkçe.</li>
       <li>Cyrillic: Беларуская, Босански, Български, Кыргызча, Монгол, Русский, Српски, Тоҷикӣ, Українська, Црногорски, Қазақша. Greek: Ελληνικά.</li>
       <li>Key labels on the device stay in English.</li>
@@ -371,7 +380,7 @@ html.deskwin .sheet{position:relative;left:auto;bottom:auto;transform:none;width
       <li><b>Control Panel → Power settings</b>: Auto off, Switch on, Wake on key and Battery.</li>
       <li><b>Auto off</b>: 2, 5, 10, 15, 30 or 60 minutes without a key press, or Never. Default 10.</li>
       <li><b>Switch on</b>: on/off, or on/off + enter. With on/off + enter, hold <kbd>on/off</kbd> and press <kbd>↵</kbd>. With one finger or a mouse, press <kbd>on/off</kbd>, then <kbd>↵</kbd> within 2 seconds.</li>
-      <li><b>Wake on key</b> (default Off): for 5 minutes after Auto off, any key switches it back on.</li>
+      <li><b>Wake on key</b> (default Off): for 5 minutes after Auto off, any key switches it back on. The power light blinks during those 5 minutes. When the device is fully off, the light is off.</li>
       <li><b>Battery</b>, or <kbd>Ctrl</kbd>+<kbd>Cmd</kbd>+<kbd>B</kbd> on a Mac and <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>B</kbd> elsewhere: battery level, charging state and estimated time left. Chrome, Edge and other Chromium browsers only.</li>
     </ul>
 
@@ -382,6 +391,8 @@ html.deskwin .sheet{position:relative;left:auto;bottom:auto;transform:none;width
       <li><b>Text contrast</b> and <b>Background contrast</b>: 1 to 9, default 5. Lower fades the text into the background. Higher makes it stronger.</li>
       <li><b>Cursor</b>: tall line (default), full block or underscore. <b>Cursor blink</b>: On or Off.</li>
       <li><b>Gaps between selected lines</b>: On shows a selection as separate stripes, Off as one block.</li>
+      <li><b>Games</b>: Off (default) or On. On adds Games to the Applets menu.</li>
+      <li><b>Focus mode</b> (Android app only): pins Plainwrite to the screen, hides the status and navigation bars and keeps the screen on, so other apps and notifications stay out of the way. The first time, Android asks whether to pin the app. Switch it off here, or unpin it the usual Android way: hold Back and Overview, or swipe up and hold with gesture navigation.</li>
       <li><b>Erase all files</b> empties all eight files.</li>
       <li><b>Factory reset</b> asks <i>Are you sure? Y/N</i>, then deletes all files, settings, palettes, custom CSS, imported fonts, language packs and your background picture. Save anything you want to keep first.</li>
     </ul>
@@ -410,6 +421,7 @@ html.deskwin .sheet{position:relative;left:auto;bottom:auto;transform:none;width
       <li>Sending uses the whole screen and shows its progress. Press <kbd>Esc</kbd> to abort the transfer.</li>
       <li>Text typed in very fast, for example from a real Neo connected as a keyboard, shows a receiving screen until it ends.</li>
       <li><b>Save as text file</b> saves a .txt file. Phones show the share sheet. Computers download the file.</li>
+      <li><b>Open text file…</b> puts a .txt file into the current file. If that file already has text, the screen asks <i>Replace File 3?</i>: press <kbd>Y</kbd> to replace it or <kbd>N</kbd> to cancel.</li>
     </ul>
 
     <h3>Offline use and installing</h3>
@@ -512,11 +524,15 @@ const NO_AR=!(window.CSS&&CSS.supports&&CSS.supports('aspect-ratio','1/1'));
   if(NO_AR)document.documentElement.classList.add('noar')})();
 // Android app (plainwrite-android): the native shell adds window.PlainwriteAndroid with saveText, setFullscreen and battery.
 const NATIVE=window.PlainwriteAndroid||null;
+// Android focus mode: pins Plainwrite to the screen (Android's app pinning), hides the system bars and keeps the screen on
+const FOCUS_OK=!!(NATIVE&&NATIVE.setFocus&&NATIVE.focusOn);
+const focusOn=()=>{try{return FOCUS_OK&&!!NATIVE.focusOn()}catch(e){return false}};
+window.plainwriteFocus=()=>{if(typeof mode!=='undefined'&&mode==='control')render()};
 // Desktop app (plainwrite-tauri) also adds window.PlainwriteDesktop with minimize, close, startDrag, fitWindow and setFramed.
 const DESK=window.PlainwriteDesktop&&window.PlainwriteDesktop.fitWindow?window.PlainwriteDesktop:null;
 const FONTS=[{name:'Large',lines:4,cols:26},{name:'Medium',lines:5,cols:33},{name:'Standard',lines:6,cols:40},{name:'Small',lines:8,cols:48},{name:'Smaller',lines:10,cols:56},{name:'Tiny',lines:12,cols:64}];
 // Filled in by build.py with the version and edition ("Version 63 (English)"); "Development version" when run from source.
-const APP_VER='Version 1.03 (Multilingual)';
+const APP_VER='Version 1.08 (Multilingual)';
 // ================= ABOUT SCREEN TEXT (edit freely) =================
 // Shown under Applets > About. Each line below is its own paragraph;
 // long lines wrap to the screen automatically, and ▲▼ scroll if it doesn't fit.
@@ -552,7 +568,7 @@ en:{applets_hdr:'Applets  ▲▼ then ↵',app_writer:'Writer',app_calc:'Calcula
   calc_hdr:'Calculator  Esc or Backspace to exit',tutor_hdr:'Typing Tutor: pick a lesson',les_home:'Home row',les_top:'Top row',les_bottom:'Bottom row',les_num:'Numbers',les_sent:'Sentences',
   tutor_done:'{0} complete',tutor_speed:'Speed: {0} words/min',tutor_acc:'Accuracy: {0}%',tutor_again:'↵=again  esc=lessons',
   tutor_line_done:'{0} wpm {1}%  ↵=next',tutor_live:'{0} wpm  {1}% accuracy',tutor_start:'Start typing the line above',
-  clear_q:'Clear File {0}?',clear_yn:'Y = clear   N = cancel',sending:'Sending File {0}… esc=stop',send_hdr:'Send File {0}:',send_type:'Type into computer',send_save:'Save as text file',
+  clear_q:'Clear File {0}?',clear_yn:'Y = clear   N = cancel',sending:'Sending File {0}… esc=stop',send_hdr:'Send File {0}:',send_type:'Type into computer',send_save:'Save as text file',send_open:'Open text file…',replace_q:'Replace File {0} with {1}?',replace_yn:'Y = replace   N = cancel',m_opened:'Opened {0} in File {1}',m_badtxt:"Can't open that file",
   find:'Find: ',m_selected:'File {0} selected',m_notfound:'Not found',m_found:'Found "{0}"',m_empty:'File is empty',m_sent:'Send complete',m_erased:'All files erased',
   m_noprinter:'No printer connected',m_nospell:'Spell check: not available',m_cleared:'File {0} cleared',m_saved:'Saved {0}',m_saved0:'Saved',m_cancel:'Save canceled',
   m_retry:'Try again in a moment',m_cantsave:"Can't save here, see below",
@@ -565,17 +581,18 @@ send_app:'Type into another program',send_click:'Click where the text should go'
   sp_none:'There is no spelling dictionary for {0} yet.',sp_skip:'Skip',sp_add:'Add to dictionary',sp_nosugg:'No suggestions',
   sp_done:'Spell check finished: {0} changed',sp_ok:'No spelling mistakes found',esc_abort:'Press Esc to abort transfer',esc_abort_short:'Esc to abort',
   cp_pwr:'Power color: ◂ {0} ▸',pwr_auto:'Auto',pwr_custom:'Custom',c_green:'Green',c_red:'Red',c_amber:'Amber',c_blue:'Blue',c_white:'White',c_pink:'Pink',
-  cp_keycols:'Key colors…',cp_bg:'Background…',cp_frame:'Screen frame: ◂ {0} ▸',cp_win:'Window: ◂ {0} ▸',win_dev:'Device only',win_norm:'Normal',cp_paled:'Palette editor',cp_deved:'Device editor',cp_tcon:'Text contrast: ◂ {0} ▸',cp_size:'Screen size: ◂ {0} ▸',cp_custsize:'Custom screen size…',d_easy:'Easy',d_normal:'Normal',d_hard:'Hard',cp_cursor:'Cursor: ◂ {0} ▸',cur_block:'Full block',cur_line:'Tall line',cur_under:'Underscore',m_over:'Typing over text',m_ins:'Inserting text',cp_selgap:'Gaps between selected lines: {0}',st_paste:'Pasted {0} words',st_recv:'Receiving text… {0} words',st_done:'Received {0} words',bat_quip:'The real thing will always have better battery life!',cp_actfile:'Current file: ◂ {0} ▸',af_outline:'Outline',af_pressed:'Pressed',af_dot:'Dot',cp_bevels:'Bevels',cp_battery:'Battery',cp_kbdset:'Keyboard settings',cp_powset:'Power settings',cp_repeat:'Key repeat: {0}',cp_sticky:'Sticky keys: {0}',cp_sound:'Key sound: ◂ {0} ▸',snd_click:'Click',snd_soft:'Soft',snd_type:'Typewriter',snd_own:'Own file',cp_sndfile:'Choose sound file…',m_sticky:'Shift for next key',snd_bad:"Can't play that sound file",bat_charging:'Charging',bat_full:'Fully charged',bat_on:'On battery',bat_left:'About {0} left',bat_none:"Battery level isn't available here",sz_normal:'Normal',sz_custom:'Custom',sz_full:'Full screen',sz_land:'{0} landscape',cp_bcon:'Background contrast: ◂ {0} ▸',app_games:'Games',g_hdr:'Games  Esc or Backspace to exit',g_snake:'Snake',g_dino:'Dino Jump',g_words:'Same & Opposite',g_simon:'Simon Says',
+  cp_keycols:'Key colors…',cp_bg:'Background…',cp_pos:'Position: ◂ {0} ▸',pos_free:'Movable',pos_fixed:'Fixed',cp_place:'Place: ◂ {0} ▸',
+  pl_default:'Default',pl_custom:'Where you put it',pl_center:'Center',pl_top:'Top',pl_bottom:'Bottom',pl_tl:'Top left',pl_tr:'Top right',pl_bl:'Bottom left',pl_br:'Bottom right',cp_frame:'Screen frame: ◂ {0} ▸',cp_win:'Window: ◂ {0} ▸',win_dev:'Device only',win_norm:'Normal',cp_paled:'Palette editor',cp_deved:'Device editor',cp_tcon:'Text contrast: ◂ {0} ▸',cp_size:'Screen size: ◂ {0} ▸',cp_custsize:'Custom screen size…',d_easy:'Easy',d_normal:'Normal',d_hard:'Hard',cp_cursor:'Cursor: ◂ {0} ▸',cur_block:'Full block',cur_line:'Tall line',cur_under:'Underscore',m_over:'Typing over text',m_ins:'Inserting text',cp_selgap:'Gaps between selected lines: {0}',st_paste:'Pasted {0} words',st_recv:'Receiving text… {0} words',st_done:'Received {0} words',bat_quip:'The real thing will always have better battery life!',cp_actfile:'Current file: ◂ {0} ▸',af_outline:'Outline',af_pressed:'Pressed',af_dot:'Dot',cp_bevels:'Bevels',cp_battery:'Battery',cp_kbdset:'Keyboard settings',cp_powset:'Power settings',cp_repeat:'Key repeat: {0}',cp_sticky:'Sticky keys: {0}',cp_sound:'Key sound: ◂ {0} ▸',snd_click:'Click',snd_soft:'Soft',snd_type:'Typewriter',snd_own:'Own file',cp_sndfile:'Choose sound file…',m_sticky:'Shift for next key',snd_bad:"Can't play that sound file",bat_charging:'Charging',bat_full:'Fully charged',bat_on:'On battery',bat_left:'About {0} left',bat_none:"Battery level isn't available here",sz_normal:'Normal',sz_custom:'Custom',sz_full:'Full screen',sz_land:'{0} landscape',cp_bcon:'Background contrast: ◂ {0} ▸',app_games:'Games',g_hdr:'Games  Esc or Backspace to exit',g_snake:'Snake',g_dino:'Dino Jump',g_words:'Same & Opposite',g_simon:'Simon Says',
   s_watch:'Watch: {0}',s_turn:'Your turn: {0}',s_good:'Well done!',s_was:'It was: {0}',
   g_ready:'{0}  ↵=start',g_paused:'{0}  paused, ↵=go',g_score:'{0}  {1}  best {2}',g_over:'Game over: {0}  ↵=again',
   w_syn:'Same as {0}?',w_ant:'Opposite of {0}?',w_right:'Right!',w_wrong:'No: {0}',w_done:'{0}/{1} right  best {2}  ↵=again',
   les_sent_more:'my favorite color is gray|meet me at the center|we traveled to the theater|she organized the catalog',
   cp_autooff:'Auto off: ◂ {0} ▸',ao_never:'Never',ao_min:'{0} min',cp_reset:'Factory reset',reset_q:'Are you sure? Y/N',
-  cp_langs:"Language packs",lp_import:"Import language pack…",lp_bad:"Not a Plainwrite language pack",chk_cyrl:"Cyrillic {0}/{1}",chk_grek:"Greek {0}/{1}",cp_wake:"Wake on key: {0}",cp_poweron:"Switch on: ◂ {0} ▸"}};
+  cp_langs:"Language packs",lp_import:"Import language pack…",lp_bad:"Not a Plainwrite language pack",lp_loading:'Downloading the list of language packs…',lp_offline:'An internet connection is required to download language packs',lp_fail:"The language packs couldn't be downloaded. Try again later.",chk_cyrl:"Cyrillic {0}/{1}",chk_grek:"Greek {0}/{1}",cp_wake:"Wake on key: {0}",cp_games:'Games: {0}',cp_focus:'Focus mode: {0}',cp_poweron:"Switch on: ◂ {0} ▸"}};
 // English variants: only the strings that differ from US English
-I18N['en-GB']={cp_keycols:'Key colours…',cp_pwr:'Power colour: ◂ {0} ▸',m_cancel:'Save cancelled',les_sent_more:'my favourite colour is grey|meet me at the centre|we travelled to the theatre|she organised the catalogue'};
-I18N['en-CA']={cp_keycols:'Key colours…',cp_pwr:'Power colour: ◂ {0} ▸',m_cancel:'Save cancelled',les_sent_more:'my favourite colour is grey|meet me at the centre|we travelled to the theatre|she organized the catalogue'};
-I18N['en-AU']={cp_keycols:'Key colours…',cp_pwr:'Power colour: ◂ {0} ▸',m_cancel:'Save cancelled',les_sent_more:'my favourite colour is grey|meet me at the centre|we travelled to the theatre|she organised the catalogue'};
+I18N['en-GB']={cp_keycols:'Key colours…',pl_center:'Centre',cp_pwr:'Power colour: ◂ {0} ▸',m_cancel:'Save cancelled',les_sent_more:'my favourite colour is grey|meet me at the centre|we travelled to the theatre|she organised the catalogue'};
+I18N['en-CA']={cp_keycols:'Key colours…',pl_center:'Centre',cp_pwr:'Power colour: ◂ {0} ▸',m_cancel:'Save cancelled',les_sent_more:'my favourite colour is grey|meet me at the centre|we travelled to the theatre|she organized the catalogue'};
+I18N['en-AU']={cp_keycols:'Key colours…',pl_center:'Centre',cp_pwr:'Power colour: ◂ {0} ▸',m_cancel:'Save cancelled',les_sent_more:'my favourite colour is grey|meet me at the centre|we travelled to the theatre|she organised the catalogue'};
 // the rest of the Commonwealth spells the British way; Philippine English spells the American way
 for(const v of['en-IE','en-NZ','en-ZA','en-IN','en-SG','en-MY','en-HK','en-NG','en-KE','en-JM'])I18N[v]=I18N['en-GB'];
 I18N['en-PH']={};
@@ -612,10 +629,11 @@ const LESSONS=[
   {key:'les_num',words:'10 25 37 48 59 60 112 365 2007 404 1984 72 88 19 46 300 5150 31'.split(' ')},
   {key:'les_sent',lines:["the quick brown fox jumps","write first, edit later","every file saves itself","slow hands make no errors","keep your eyes on the text","small screens, big stories","type now, fix it tomorrow","fingers rest on home row","one more page before bed","pack my box with jugs"]}];
 const KW_LINES=5;
-const APPLETS=[["app_writer","word"],["app_calc","calc"],["app_tutor","kwmenu"],["app_games","games"],["app_control","control"],["app_about","about"]];
+const ALL_APPLETS=[["app_writer","word"],["app_calc","calc"],["app_tutor","kwmenu"],["app_games","games"],["app_control","control"],["app_about","about"]];
+const applets=()=>ALL_APPLETS.filter(a=>a[1]!=='games'||S.games);   // Games only shows once switched on in Control Panel
 
 function defaults(){return{files:Array.from({length:8},(_,i)=>({text:i===0?WELCOME:'',cur:0,top:0})),active:0,
-  face:0,faceName:'Plain Sans',font:0,blink:true,lastFind:'',palette:0,dark:'off',lang:null,kbd:'device',autoOff:10,powerOn:'power',wake:false,palV:3,tcon:5,bcon:5,size:'normal',repeat:true,sticky:false,sound:'off'}}
+  face:0,faceName:'Plain Sans',font:0,blink:true,lastFind:'',palette:0,dark:'off',lang:null,kbd:'device',autoOff:10,powerOn:'power',wake:false,games:false,palV:3,tcon:5,bcon:5,size:'normal',repeat:true,sticky:false,sound:'off'}}
 let S=null;
 let firstBoot=false;try{firstBoot=localStorage.getItem(KEY)==null;S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||!Array.isArray(S.files)||S.files.length!==8||!FONTS[S.font])S=defaults();
@@ -797,7 +815,6 @@ function wrap(text){const lines=[],n=text.length;let start=0;
   return lines}
 function findLine(lines,c){let k=0;for(let i=0;i<lines.length;i++){if(lines[i].s<=c)k=i;else break}return k}
 function lineEnd(lines,i){const L=lines[i];if(i+1<lines.length&&lines[i+1].s===L.e&&L.e>L.s)return L.e-1;return L.e}
-function posAtX(text,L,x){let w=0;for(let p=L.s;p<L.e;p++){const cw=W(text[p]);if(w+cw/2>x)return p;w+=cw}return L.e}
 
 // ---------- drawing helpers ----------
 const esc=ch=>ch==='&'?'&amp;':ch==='<'?'&lt;':ch==='>'?'&gt;':ch==='\uE0B0'?'<span class="eb">█</span>':ch;
@@ -854,11 +871,13 @@ function listRows(n,header,items,sel){const rows=[invRow(header)],vis=n-1;
   for(let r=0;r<vis;r++){const i=top+r;if(i>=items.length){rows.push('');continue}
     rows.push(`<span class="blk${i===sel?' inv':''}" data-i="${i}">${plain((i===sel?'▸ ':'  ')+items[i])}&nbsp;</span>`)}
   return rows}
-const menuRows=n=>listRows(n,t('applets_hdr'),APPLETS.map(a=>t(a[0])),menuSel);
+const menuRows=n=>listRows(n,t('applets_hdr'),applets().map(a=>t(a[0])),menuSel);
 
 function controlList(){const used=S.files.reduce((n,f)=>n+f.text.length,0),inUse=S.files.filter(f=>f.text.length).length;
   return[{id:'font',label:t('cp_font',FACES[S.face].name,FONTS[S.font].lines)},
     {id:'device',step:1,label:t('cp_device',devTheme().name)},
+    {id:'devpos',step:1,label:t('cp_pos',t(S.devFixed===true?'pos_fixed':'pos_free'))},
+    {id:'place',step:1,label:t('cp_place',placeName())},
     {id:'dark',step:1,label:t('cp_dark',t('dark_'+S.dark))},
     {id:'tcon',step:1,label:t('cp_tcon',S.tcon)},
     {id:'bcon',step:1,label:t('cp_bcon',S.bcon)},
@@ -871,6 +890,8 @@ function controlList(){const used=S.files.reduce((n,f)=>n+f.text.length,0),inUse
     {id:'cursor',step:1,label:t('cp_cursor',t('cur_'+(CURSORS.includes(S.cursor)?S.cursor:'line')))},
     {id:'blink',label:t('cp_blink',S.blink?t('on'):t('off'))},
     {id:'selgap',label:t('cp_selgap',S.selGap===false?t('off'):t('on'))},
+    {id:'games',label:t('cp_games',S.games?t('on'):t('off'))},
+    ...(FOCUS_OK?[{id:'focus',label:t('cp_focus',focusOn()?t('on'):t('off'))}]:[]),
     {id:'mem',label:t('cp_mem',used.toLocaleString(),inUse)},
     {id:'erase',label:confirmErase?t('cp_erase_confirm'):t('cp_erase')},
     {id:'reset',label:t('cp_reset')}]}
@@ -936,86 +957,86 @@ function fontRows(n){
   while(rows.length<n)rows.push('');
   return rows.slice(0,n)}
 
-const _qc7='AlphaSmartv103',D=s=>{if(!_qc7)return s;const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i)^_qc7.charCodeAt(i%_qc7.length);return new TextDecoder().decode(u)};
+const _qc7='AlphaSmartv108',D=s=>{if(!_qc7)return s;const b=atob(s),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i)^_qc7.charCodeAt(i%_qc7.length);return new TextDecoder().decode(u)};
 
 function _q3(v,r){const n=+r,q=v.replace(/\s/g,D(''));
-  if(q===D('d0ZJ')||q===D('d6/nUQ=='))return D('YUxYXFNzBA9SFhdCVRNwX1k=');
-  if(n===42)return D('YUxYChQnTRYaFQIRR1IyTAQABHMcFBcHAlhfXX5F');
-  if(n===0.7734||n===5318008||n===58008||n===7734)return D('YUxYHBQhA0EfEVZEQEAoCBVIBTwaD1s=');
+  if(q===D('d0ZJ')||q===D('d6/nUQ=='))return D('YUxYXFNzBA9SFhdCVRhwX1k=');
+  if(n===42)return D('YUxYChQnTRYaFQIRR1kyTAQABHMcFBcHAlhfVn5F');
+  if(n===0.7734||n===5318008||n===58008||n===7734)return D('YUxYHBQhA0EfEVZEQEsoCBVIBTwaD1s=');
   if(n===Infinity||n===-Infinity||/\/0(?![.\d])/.test(q))return D('YUxYBggwCEEGBg8Y');
   if(n===80085)return D('YUxYDxM8GkEHBF8=');return D('')}
-const _qa=[[D('ORUKEhg='),D('DwMEAAg9CkEaFQZBVV0yQg==')],[D('MQAFDwk='),D('AEwYBw0/AhZSAhlYU1ZhHxEREnNPMR4BEVkSHQ==')],
-  [D('NQQVSBAmBAIZVBRDX0QvTBYHGXMHFB8EBRFfRSQeUBwJNk0NEw4PEVRcJg=='),D('BBoVGhhzAQQGABNDEEMzCQMNDydNABwQVlJfQTMJExxP')],
-  [D('IAAcSBY8HwpSFRhVEF0uTAAEACpNDBMfE0IQWSAPG0gAcwkUHhhWU19K'),D('CQ0GDUEqAhRSAB5eRVQpGFAJAzwYFVIVVllfXygIERFe')],
-  [D('KQkcBA5zGg4AGBI='),D('CQkcBA5/TREAGxFDUV4sCQJG')],[D('LhwVBkEnBQRSBBlVEFEgFVAMDjwfEg=='),D('CEsdSAA1HwAbEFZ4EFAgAlccQTcCQQYcF0Ue')],
-  [D('KBhQHwAgTQBSEBdDWxMgAhRIEicCEx8NVl9ZVCkY'),D('AwMcDEEwBQ4bFxMf')],[D('LQMCDQxzBBEBARs='),D('Fh4ZHARzHg4fEQJZWV0mTAINAD9M')],
-  [D('IAIUSA88GkEUGwQRQ1wsCQQACD0KQREbG0FcVjUJHBFBNwQHFBEEVF5H'),D('CQMADQcmAQ0LVBheRBMSHBEFQScFCAFUAlhdVm8=')],[D('LQMUG0E8C0EXGRlfVQ=='),D('DSMxLDISIC48MS8QERI=')],
-  [D('KgARCRUmTQMTBhdVURMvBRscDg=='),D('Ah4ZBgY2Qw==')],
-  [D('LwkGDRNzCg4cGhcRV1o3CVARDiZNFAI='),D('DwMESBU7BBJSFRFQWV1vQl4=')],[D('LQMfA0EyGUEGHB9CEEMpAwQHBiEMERo='),D('DwMESBU7BBJSFRFQWV1vQl4=')],
-  [D('IAAcSBg8GBNSFhdCVRMgHhVIAzYBDhwTVkVfEzQf'),D('DAMGDUF0Nyg1U1gRdlwzTBcaBDIZQRgBBUVZUCRC')],[D('IAAcSBg8GEEQFQVUEFIzCVAKBD8CDxVUAl4QRjI='),D('DAMGDUF0Nyg1U1gRdlwzTBcaBDIZQRgBBUVZUCRC')],
-  [D('NQMfA0EyA0ETBgReRxMoAlAcCTZNChwREw=='),D('DwMESBU7BBJSFRFQWV1vQl4=')],[D('KgMeEUFhXVBA'),D('DwMESBU7BBJSFRFQWV1vQl4=')],[D('IgQFBgYmHg=='),D('DwMESBU7BBJSFRFQWV1vQl4=')],[D('Mg0ZDEEwDA0fGA8='),D('Ag0cBQ0qUg==')],[D('NQQVSAw6HhIbGBMRW10uGwNIFjsIExdUH0UQWjI='),D('FQQVSAI8HRgCFQVFURMqAh8fEnMaCRcGExFZR2EFA0gAJ00AHhhWRVleJB9e')],[D('NRkCCg5zCA8RFRREXFI1AwI='),D('EgMFBgUgTQ0XEx9FHhMSBBkYQToZTw==')],[D('IwkVBkE1DBNSEQBUXhMgH1AMBDAEBRcQ'),D('AgMFBAVzFA4HVBNHVV1hDQNIBTYOCBYREhFEXGEBEQMEcwAOABFWQlVdMglP')],
-  [D('KB9QHAk2TQ4cEVZBWVYiCVAaBDIB'),D('FSQ1SC4dKEEiPTNydRMIP1A6JBIhQFNV')],[D('NQQVSA49CEECHRNSVRMoH1AaBDIB'),D('FSQ1SC4dKEEiPTNydRMIP1A6JBIhQFNV')],[D('JgMcSAV9TRMdExND'),D('FSQ1SC4dKEEiPTNydRMIP1A6JBIhQFNV')],[D('NgkRBBU7QUEUFRtUHBMxAwcNEw=='),D('FSQ1SC4dKEEiPTNydRMIP1A6JBIhQFNV')],[D('LRkbDU1zBEETGVZIX0YzTBYJFTsIEw=='),D('DwMfBw48Ag5T')],[D('LwNcSAhzDAxSDRlEQhMnDQQABCE='),D('DwMfBw48Ag5T')],[D('LA0JSBU7CEEUGwRSVRMjCVAfCCcFQQsbAw=='),D('AAIUSAA/Hg5SAx9FWBM4AwVG')],[D('LQUGDUE/Ag8VVBdfVBMxHh8bETYf'),D('EQkRCwRzDA8WVBpeXlRhABkOBH0=')],[D('MwkDARInDA8REVZYQxMnGQQBDTY='),D('GAMFSBY6AQ1SFhMRUUAyBR0BDTIZBBZa')],[D('IwkRBUE+CEEHBFoRQ1AuGAQR'),D('BAIVGgY6HggcE1g=')],[D('IwkRBUE+CEEHBFZCU1w1GAk='),D('BAIVGgY6HggcE1g=')],[D('OAMFSBI7DA0eVBheRBMxDQMb'),D('BwAJREEqAhRSEhleXEBg')],[D('KBhXG0E3DA8VEQReRUBhGB9IBjxNAB4bGFQ='),D('FQ0bDUEnBQgBVQ==')],[D('KBgDSAUyAwYXBhlEQxM1A1APDnMMDR0aEw=='),D('FQ0bDUEnBQgBVQ==')],[D('MR4RARI2TRUaEVZCRV0='),D('HTckNU4=')],[D('Ng0CSA82GwQAVBVZUV0mCQM='),D('Fg0CRkEEDBNSGhNHVUFhDxgJDzQIElw=')],[D('NQQVSAA9HhYXBlZFXxMtBRYNTXMZCRdUA19ZRSQeAw1BMgMFUhEAVEJKNQQZBgY='),D('dV5e')],[D('MhkUB0E+DAoXVBtUEFJhHxEGBSQEAho='),D('DgcREU8=')],[D('MwFQRRM1TU4='),D('DwUTDUEnHxhc')],[D('LgERDUEkDEEfGwMRQ1soAhQNCCEY'),D('Dy0+IV5y')],[D('JABQGBIqTQodGhFDX1w='),D('FQQVSC4hCgAcHQxQRFouAlABEnMaAAYXHlheVG8=')],[D('JABQGBIqTQIdGhFDX1w='),D('FQQVSC4hCgAcHQxQRFouAlABEnMaAAYXHlheVG8=')],[D('NRkEHRMm'),D('FRkEHRMmEw==')],[D('Kg0dDQkyAAQaFQ=='),D('CS0xKSASLCAzVQ==')],[D('MQAFG0EmARUAFQ=='),D('ESAlO0EGITUgNVcQEQ==')],[D('JQ0EHAQxDBgd'),D('AwkcAQQlCEEbAFc=')],
-  [D('KBhXG0E8GwQAVE8BAAM='),D('DwMESBU7BBJSFRFQWV1vQl4=')],[D('KBgDSA4lCBNSTUYBAA=='),D('DwMESBU7BBJSFRFQWV1vQl4=')],
-  [D('NQQVSAIyBgRSHQURURMtBRU='),D('DwMESBU7BBJSFRFQWV1vQl4=')],[D('JQNQCUExDBMAERoRQlwtAA=='),D('DwMESBU7BBJSFRFQWV1vQl4=')],[D('MR4VGxJzC0EGG1ZBUUphHhUbETYOFQE='),D('DwMESBU7BBJSFRFQWV1vQl4=')],
-[D('IgUCBg4='),D('FQQVSBInHw4cExNCRBI=')],[D('NQQVSAUyFEEGHBMRXUYyBRNIBToIBQ=='),null]];
+const _qa=[[D('ORUKEhg='),D('DwMEAAg9CkEaFQZBVVYyQg==')],[D('MQAFDwk='),D('AEwYBw0/AhZSAhlYU11hHxEREnNPMR4BEVkSFg==')],
+  [D('NQQVSBAmBAIZVBRDX08vTBYHGXMHFB8EBRFfTiQeUBwJNk0NEw4PEVRXJg=='),D('BBoVGhhzAQQGABNDEEgzCQMNDydNABwQVlJfSjMJExxP')],
+  [D('IAAcSBY8HwpSFRhVEFYuTAAEACpNDBMfE0IQUiAPG0gAcwkUHhhWU19B'),D('CQ0GDUEqAhRSAB5eRV8pGFAJAzwYFVIVVllfVCgIERFe')],
+  [D('KQkcBA5zGg4AGBI='),D('CQkcBA5/TREAGxFDUVUsCQJG')],[D('LhwVBkEnBQRSBBlVEFogFVAMDjwfEg=='),D('CEsdSAA1HwAbEFZ4EFsgAlccQTcCQQYcF0Ue')],
+  [D('KBhQHwAgTQBSEBdDWxggAhRIEicCEx8NVl9ZXykY'),D('AwMcDEEwBQ4bFxMf')],[D('LQMCDQxzBBEBARs='),D('Fh4ZHARzHg4fEQJZWVYmTAINAD9M')],
+  [D('IAIUSA88GkEUGwQRQ1csCQQACD0KQREbG0FcXTUJHBFBNwQHFBEEVF5M'),D('CQMADQcmAQ0LVBheRBgSHBEFQScFCAFUAlhdXW8=')],[D('LQMUG0E8C0EXGRlfVQ=='),D('DSMxLDISIC48MS8QERk=')],
+  [D('KgARCRUmTQMTBhdVURgvBRscDg=='),D('Ah4ZBgY2Qw==')],
+  [D('LwkGDRNzCg4cGhcRV1E3CVARDiZNFAI='),D('DwMESBU7BBJSFRFQWVZvQl4=')],[D('LQMfA0EyGUEGHB9CEEgpAwQHBiEMERo='),D('DwMESBU7BBJSFRFQWVZvQl4=')],
+  [D('IAAcSBg8GBNSFhdCVRggHhVIAzYBDhwTVkVfGDQf'),D('DAMGDUF0Nyg1U1gRdlczTBcaBDIZQRgBBUVZWyRC')],[D('IAAcSBg8GEEQFQVUEFkzCVAKBD8CDxVUAl4QTTI='),D('DAMGDUF0Nyg1U1gRdlczTBcaBDIZQRgBBUVZWyRC')],
+  [D('NQMfA0EyA0ETBgReRxgoAlAcCTZNChwREw=='),D('DwMESBU7BBJSFRFQWVZvQl4=')],[D('KgMeEUFhXVBA'),D('DwMESBU7BBJSFRFQWVZvQl4=')],[D('IgQFBgYmHg=='),D('DwMESBU7BBJSFRFQWVZvQl4=')],[D('Mg0ZDEEwDA0fGA8='),D('Ag0cBQ0qUg==')],[D('NQQVSAw6HhIbGBMRW1YuGwNIFjsIExdUH0UQUTI='),D('FQQVSAI8HRgCFQVFURgqAh8fEnMaCRcGExFZTGEFA0gAJ00AHhhWRVlVJB9e')],[D('NRkCCg5zCA8RFRREXFk1AwI='),D('EgMFBgUgTQ0XEx9FHhgSBBkYQToZTw==')],[D('IwkVBkE1DBNSEQBUXhggH1AMBDAEBRcQ'),D('AgMFBAVzFA4HVBNHVVZhDQNIBTYOCBYREhFEV2EBEQMEcwAOABFWQlVWMglP')],
+  [D('KB9QHAk2TQ4cEVZBWV0iCVAaBDIB'),D('FSQ1SC4dKEEiPTNydRgIP1A6JBIhQFNV')],[D('NQQVSA49CEECHRNSVRgoH1AaBDIB'),D('FSQ1SC4dKEEiPTNydRgIP1A6JBIhQFNV')],[D('JgMcSAV9TRMdExND'),D('FSQ1SC4dKEEiPTNydRgIP1A6JBIhQFNV')],[D('NgkRBBU7QUEUFRtUHBgxAwcNEw=='),D('FSQ1SC4dKEEiPTNydRgIP1A6JBIhQFNV')],[D('LRkbDU1zBEETGVZIX00zTBYJFTsIEw=='),D('DwMfBw48Ag5T')],[D('LwNcSAhzDAxSDRlEQhgnDQQABCE='),D('DwMfBw48Ag5T')],[D('LA0JSBU7CEEUGwRSVRgjCVAfCCcFQQsbAw=='),D('AAIUSAA/Hg5SAx9FWBg4AwVG')],[D('LQUGDUE/Ag8VVBdfVBgxHh8bETYf'),D('EQkRCwRzDA8WVBpeXl9hABkOBH0=')],[D('MwkDARInDA8REVZYQxgnGQQBDTY='),D('GAMFSBY6AQ1SFhMRUUsyBR0BDTIZBBZa')],[D('IwkRBUE+CEEHBFoRQ1suGAQR'),D('BAIVGgY6HggcE1g=')],[D('IwkRBUE+CEEHBFZCU1c1GAk='),D('BAIVGgY6HggcE1g=')],[D('OAMFSBI7DA0eVBheRBgxDQMb'),D('BwAJREEqAhRSEhleXEtg')],[D('KBhXG0E3DA8VEQReRUthGB9IBjxNAB4bGFQ='),D('FQ0bDUEnBQgBVQ==')],[D('KBgDSAUyAwYXBhlEQxg1A1APDnMMDR0aEw=='),D('FQ0bDUEnBQgBVQ==')],[D('MR4RARI2TRUaEVZCRVY='),D('HTckNU4=')],[D('Ng0CSA82GwQAVBVZUVYmCQM='),D('Fg0CRkEEDBNSGhNHVUphDxgJDzQIElw=')],[D('NQQVSAA9HhYXBlZFXxgtBRYNTXMZCRdUA19ZTiQeAw1BMgMFUhEAVEJBNQQZBgY='),D('dV5e')],[D('MhkUB0E+DAoXVBtUEFlhHxEGBSQEAho='),D('DgcREU8=')],[D('MwFQRRM1TU4='),D('DwUTDUEnHxhc')],[D('LgERDUEkDEEfGwMRQ1AoAhQNCCEY'),D('Dy0+IV5y')],[D('JABQGBIqTQodGhFDX1c='),D('FQQVSC4hCgAcHQxQRFEuAlABEnMaAAYXHlheX28=')],[D('JABQGBIqTQIdGhFDX1c='),D('FQQVSC4hCgAcHQxQRFEuAlABEnMaAAYXHlheX28=')],[D('NRkEHRMm'),D('FRkEHRMmEw==')],[D('Kg0dDQkyAAQaFQ=='),D('CS0xKSASLCAzVQ==')],[D('MQAFG0EmARUAFQ=='),D('ESAlO0EGITUgNVcQEQ==')],[D('JQ0EHAQxDBgd'),D('AwkcAQQlCEEbAFc=')],
+  [D('KBhXG0E8GwQAVE8BAAg='),D('DwMESBU7BBJSFRFQWVZvQl4=')],[D('KBgDSA4lCBNSTUYBAA=='),D('DwMESBU7BBJSFRFQWVZvQl4=')],
+  [D('NQQVSAIyBgRSHQURURgtBRU='),D('DwMESBU7BBJSFRFQWVZvQl4=')],[D('JQNQCUExDBMAERoRQlctAA=='),D('DwMESBU7BBJSFRFQWVZvQl4=')],[D('MR4VGxJzC0EGG1ZBUUFhHhUbETYOFQE='),D('DwMESBU7BBJSFRFQWVZvQl4=')],
+[D('IgUCBg4='),D('FQQVSBInHw4cExNCRBk=')],[D('NQQVSAUyFEEGHBMRXU0yBRNIBToIBQ=='),null]];
 function _q11(){const d=new Date(1959,1,3),l=S.lang||D('JAI=');
-  if(l===D('JAI=')||l===D('JAJdKyA=')||l===D('JAJdOCk='))return D('BwkSGhQyHxhSR1oRAQp0VV4=');if(l.indexOf(D('JAI='))===0)return D('ckw2DQMhGAAADVYACQZ4Qg==');
-  try{return new Intl.DateTimeFormat(l,{year:D('LxkdDRM6Dg=='),month:D('LQMeDw=='),day:D('LxkdDRM6Dg==')}).format(d)+D('bw==')}catch(e){return D('ckw2DQMhGAAADVYACQZ4Qg==')}}
+  if(l===D('JAI=')||l===D('JAJdKyA=')||l===D('JAJdOCk='))return D('BwkSGhQyHxhSR1oRAQF0VV4=');if(l.indexOf(D('JAI='))===0)return D('ckw2DQMhGAAADVYACQ14Qg==');
+  try{return new Intl.DateTimeFormat(l,{year:D('LxkdDRM6Dg=='),month:D('LQMeDw=='),day:D('LxkdDRM6Dg==')}).format(d)+D('bw==')}catch(e){return D('ckw2DQMhGAAADVYACQ14Qg==')}}
 const _q18=[ // generated by namehash.py
-  [13,2783779346,D('azsVBgUqTSITBhpeQx0=')],
-  [12,3634732164,D('az8fGAk6CEElHRpCX11tTBMHTDoDFxcaAl5CEy4KUBwJNk0gIDlWUlhaMUI=')]];
+  [13,2783779346,D('azsVBgUqTSITBhpeQxY=')],
+  [12,3634732164,D('az8fGAk6CEElHRpCX1ZtTBMHTDoDFxcaAl5CGC4KUBwJNk0gIDlWUlhRMUI=')]];
 const _q6c=s=>{let x=0x811c9dc5;for(let i=0;i<s.length;i++){x^=s.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x};
-const _q73=D('AEEqCUwpruFft+DyqB6C2rPQTJDSpfJZs44='),_q7a=ch=>!!ch&&new RegExp(D('Gg==')+_q73+D('HA==')).test(ch);
-const _q1f=new RegExp(D('H0QkAAQvLB0zGgpwXlc9LgUcHRwfHSEbCmVYVi8QJwAEPREoFAg5WUx7KBA4DRgvJQQeGBlNdFYgHgwlGC8iFAAIL15FQT0kGRsdGwgTDiAeVFlBPSUEGx0aETYXCC9eRU8JCQw7CTYRNRoRD015Rz04GAESLzkJEwAKfVlHNQAVFCw6HhIOOQRCTH4zED0bHRcfHSEdBE18UiUVDCQOIQkdIRUfX0RPEhgMOBM6AwIXBwVNYEEoAhMNHQIYBBcaCnpZXSYQJA0NPxEgAR8KfV9FJBA8AQo2ESwXEQJNZ1o1BAw/CCcFDgcACndfQT0qAgcMLzkODjUCTXldPSMeFCMqES4UCD9CTGQgHwwmDicRLx0IL1RDGmU='));
+const _q73=D('AEEqCUwpruFft+DyqBWC2rPQTJDSpfJZs44='),_q7a=ch=>!!ch&&new RegExp(D('Gg==')+_q73+D('HA==')).test(ch);
+const _q1f=new RegExp(D('H0QkAAQvLB0zGgpwXlw9LgUcHRwfHSEbCmVYXS8QJwAEPREoFAg5WUxwKBA4DRgvJQQeGBlNdF0gHgwlGC8iFAAIL15FSj0kGRsdGwgTDiAeVFlKPSUEGx0aETYXCC9eRUQJCQw7CTYRNRoRD015TD04GAESLzkJEwAKfVlMNQAVFCw6HhIOOQRCTHUzED0bHRcfHSEdBE18WSUVDCQOIQkdIRUfX0REEhgMOBM6AwIXBwVNYEooAhMNHQIYBBcaCnpZViYQJA0NPxEgAR8KfV9OJBA8AQo2ESwXEQJNZ1E1BAw/CCcFDgcACndfSj0qAgcMLzkODjUCTXlWPSMeFCMqES4UCD9CTG8gHwwmDicRLx0IL1RDEWU='));
 function _q26(raw){
-  if(new RegExp(D('aTIMMz8=')+_q73+D('HEUDCQomHwAuB11GUUEySA=='),D('KA==')).test(raw))return D('FgkZGgVzGgALVAJeEEAxCRwEQRQMDRMMDxF2QYLIBQQEOgNBKwEYUB4=');
-  if(new RegExp(D('aTIMMz8=')+_q73+D('HEUDCQomHwAuB11FUVoyCR5M'),D('KA==')).test(raw))return D('FgkZGgVzGgALVAJeEEAxCRwEQRQEDxUVVn5aXDRBAwkMMk0lFxoFVERANEwpHQ8yQw==');
+  if(new RegExp(D('aTIMMz8=')+_q73+D('HEUDCQomHwAuB11GUUoySA=='),D('KA==')).test(raw))return D('FgkZGgVzGgALVAJeEEsxCRwEQRQMDRMMDxF2SoLIBQQEOgNBKwEYUB4=');
+  if(new RegExp(D('aTIMMz8=')+_q73+D('HEUDCQomHwAuB11FUVEyCR5M'),D('KA==')).test(raw))return D('FgkZGgVzGgALVAJeEEsxCRwEQRQEDxUVVn5aVzRBAwkMMk0lFxoFVERLNEwpHQ8yQw==');
   const end=raw.slice(-1);if(!end||_q7a(end))return null;const s=raw.slice(0,-1);
-  let m=new RegExp(D('aTIMMz8=')+_q73+D('HEVYOwA4GBMTCCVwe2YTLVk0EnhFOg==')+_q73+D('HEdZTA==')).exec(s);
-  if(m&&new RegExp(D('H0QHCRMgERUTHQVUXhpl'),D('KA==')).test(m[3]))return null;
-  if(!m){if(end===D('YQ==')||end===D('SA=='))return null;m=new RegExp(D('aTIMMz8=')+_q73+D('HEVYOwA4GBMTCCVwe2YTLVlM')).exec(s);if(!m)return null}
+  let m=new RegExp(D('aTIMMz8=')+_q73+D('HEVYOwA4GBMTCCVwe20TLVk0EnhFOg==')+_q73+D('HEdZTA==')).exec(s);
+  if(m&&new RegExp(D('H0QHCRMgERUTHQVUXhFl'),D('KA==')).test(m[3]))return null;
+  if(!m){if(end===D('YQ==')||end===D('SA=='))return null;m=new RegExp(D('aTIMMz8=')+_q73+D('HEVYOwA4GBMTCCVwe20TLVlM')).exec(s);if(!m)return null}
   const before=s.slice(0,m.index+m[1].length),prev=new RegExp(D('aTIMMz8=')+_q73+D('ZkEtQUkI')+_q73+D('HDdXRQ==')+_q73+D('HEZZNBJ4SQ==')).exec(before);
-  if(prev&&new RegExp(D('HzcxRTuQ7Uyx4rWpHfDfqPBFpO4wOhNZDPKvHoLas9BMkNKl81mzjxceHEdU')).test(prev[2])&&!_q1f.test(prev[2]))return null;
+  if(prev&&new RegExp(D('HzcxRTuQ7Uyx4rWpHfvfqPBFpO4wOhNZDPKvFYLas9BMkNKl81mzjxcVHEdU')).test(prev[2])&&!_q1f.test(prev[2]))return null;
   return D('FgQZCwlzPgAZAQRQDw==')}
-const _q2d=new RegExp(D('aQcRHAgjGA8TGgpaUUcoHAUGBCECHRkfHRFeVGEBFwlBMgMAGVQYVhBRIBURBh0yAwAZVBhWEFEgFREGHTgMFRMVBRwPRyANAwkPLwYAFRUaUF5UbFMXCQ0yAwYTGgpTX10oChELCDwRBB8dGlhfEysNEwEPJwIdFQYTVl9BKA1QDARzBwQBAQVNQEYmDRRIDTIaCBwIFFBcWi8YER8AOBESBwQEVF1cPRgVAgQhAhIOBB5YXFoxHBkGBHMfBAQbGkREWi4CDAAIPgwGAR0dUF5PMwkSBw0mHhgdGgpCWVQgG1k='),D('KA=='));
+const _q2d=new RegExp(D('aQcRHAgjGA8TGgpaUUwoHAUGBCECHRkfHRFeX2EBFwlBMgMAGVQYVhBaIBURBh0yAwAZVBhWEFogFREGHTgMFRMVBRwPTCANAwkPLwYAFRUaUF5fbFMXCQ0yAwYTGgpTX1YoChELCDwRBB8dGlhfGCsNEwEPJwIdFQYTVl9KKA1QDARzBwQBAQVNQE0mDRRIDTIaCBwIFFBcUS8YER8AOBESBwQEVF1XPRgVAgQhAhIOBB5YXFExHBkGBHMfBAQbGkREUS4CDAAIPgwGAR0dUF5EMwkSBw0mHhgdGgpCWV8gG1k='),D('KA=='));
 let _q34=false;
 function _q3b(c){const v=ta.value,end=v[c-1];if(!end||_q7a(end))return null;
   if(v.slice(Math.max(0,c-4),c-1)===D('Cic7')&&!_q7a(v[c-5])){if(_q2d.test(v.slice(Math.max(0,c-3000),c-4)))return null;_q34=true;return D('FgQZCwlzJio5Sw==')}
   if(_q34){const m=new RegExp(D('aQ==')+_q2d.source+D('aEg='),D('KA==')).exec(v.slice(Math.max(0,c-40),c-1));
-    if(m&&!_q7a(v[c-1-m[1].length-1])){_q34=false;return D('FQQRBgpzCg4dEBhUQ0Bv')}}
+    if(m&&!_q7a(v[c-1-m[1].length-1])){_q34=false;return D('FQQRBgpzCg4dEBhUQ0tv')}}
   return null}
-const _q42=[[D('EgMFHAk2Hw9SJh5eVFYyBRE='),D('GwUdCgAxGgQ=')],[D('DwMCHAk2Hw9SJh5eVFYyBRE='),D('Gw0dCggy')],[D('EwQfDAQgBAA='),D('GwUdCgAxGgQ=')],[D('DxURGwA/DA8W'),D('DA0cCRY6')],
+const _q42=[[D('EgMFHAk2Hw9SJh5eVF0yBRE='),D('GwUdCgAxGgQ=')],[D('DwMCHAk2Hw9SJh5eVF0yBRE='),D('Gw0dCggy')],[D('EwQfDAQgBAA='),D('GwUdCgAxGgQ=')],[D('DxURGwA/DA8W'),D('DA0cCRY6')],
   [D('AwkTABQyAwAeFRhV'),D('AwMEGxYyAwA=')],[D('Aw0DHRU8AQAcEA=='),D('DQkDBxU7Ag==')],[D('EhsREgg/DA8W'),D('BB8HCRU6Awg=')],[D('FQ0eDwA9FAgZFQ=='),D('FQ0eEgA9BAA=')],[D('BQ0YBww2FA=='),D('AwkeAQ8=')],
   [D('FBwADRNzOw4eABc='),D('AxkCAwg9DEE0FQVe')],[D('Gw0ZGgQ='),D('BT5QKw49Cg4=')],[D('AA4JGxI6AwgT'),D('BBgYAQ4jBAA=')],[D('AgkJBA49'),D('Eh4ZSC0yAwoT')],[D('AxkCBQA='),D('DBURBgwyHw==')],
-  [D('EgURBQ=='),D('FQQRAQ0yAwU=')],[D('EQkCGwgy'),D('CB4RBg==')],[D('Cg0dGBQwBQQT'),D('Ag0dCg43BAA=')],[D('BA0DHEEDDAobBwJQXg=='),D('Aw0eDw0yCQQBHA==')],[D('BRkECwlzKAABAFZ4XlcoCQM='),D('CAIUBw82HggT')],
-  [D('DA0cCRgy'),D('DA0cCRggBAA=')],[D('EQMCHBQ0GAQBEVZlWV4uHg=='),D('FQUdBxN+IQQBABM=')],[D('BA0DHEEHBAwdBg=='),D('FQUdBxN+IQQBABM=')],[D('DwkHSCk2DxMbEBNC'),D('Fw0eHQAnGA==')],
-  [D('BAAcAQI2TSgBGBdfVEA='),D('FRkGCQ0m')],[D('FgkDHAQhA0EhFRteUQ=='),D('Eg0dBwA=')],[D('EQAVCRIyAxVSPQVdUV0l'),D('Dw0FGhQ=')],[D('Ax4ZHAggBUE6GxhVRUEgHw=='),D('AwkcARs2')],
-  [D('Ax4ZHAggBUE1AR9QXlI='),D('BhkJCQ8y')],[D('BRkECwlzKhQbFRhQ'),D('EhkCAQ8yAAQ=')],
-  [D('BA0DHEEUCBMfFRhI'),D('BgkCBQA9FA==')],[D('FgkDHEEUCBMfFRhI'),D('BgkCBQA9FA==')],[D('CBofGhhzLg4TBwI='),D('Aq/EHARzCUY7AhlYQlY=')],[D('Ag0ADUEFCBMWEQ=='),D('Ag0SB0EFCBMWEQ==')]];
+  [D('EgURBQ=='),D('FQQRAQ0yAwU=')],[D('EQkCGwgy'),D('CB4RBg==')],[D('Cg0dGBQwBQQT'),D('Ag0dCg43BAA=')],[D('BA0DHEEDDAobBwJQXg=='),D('Aw0eDw0yCQQBHA==')],[D('BRkECwlzKAABAFZ4XlwoCQM='),D('CAIUBw82HggT')],
+  [D('DA0cCRgy'),D('DA0cCRggBAA=')],[D('EQMCHBQ0GAQBEVZlWVUuHg=='),D('FQUdBxN+IQQBABM=')],[D('BA0DHEEHBAwdBg=='),D('FQUdBxN+IQQBABM=')],[D('DwkHSCk2DxMbEBNC'),D('Fw0eHQAnGA==')],
+  [D('BAAcAQI2TSgBGBdfVEs='),D('FRkGCQ0m')],[D('FgkDHAQhA0EhFRteUQ=='),D('Eg0dBwA=')],[D('EQAVCRIyAxVSPQVdUVYl'),D('Dw0FGhQ=')],[D('Ax4ZHAggBUE6GxhVRUogHw=='),D('AwkcARs2')],
+  [D('Ax4ZHAggBUE1AR9QXlk='),D('BhkJCQ8y')],[D('BRkECwlzKhQbFRhQ'),D('EhkCAQ8yAAQ=')],
+  [D('BA0DHEEUCBMfFRhI'),D('BgkCBQA9FA==')],[D('FgkDHEEUCBMfFRhI'),D('BgkCBQA9FA==')],[D('CBofGhhzLg4TBwI='),D('Aq/EHARzCUY7AhlYQl0=')],[D('Ag0ADUEFCBMWEQ=='),D('Ag0SB0EFCBMWEQ==')]];
 const _q81=[[D('KwkSNw=='),()=>lcd.classList.toggle(D('JxRB'))],[D('JQUeBgQhDw4cEQ=='),()=>screen.classList.toggle(D('JxRC'))],[D('Jh4FBQw='),()=>screen.classList.toggle(D('JxRC'))]];
 function _q88(){const l=splashEl.querySelector(D('bwAfDw4='));if(l)l.lastChild.textContent=Math.random()<1e-4?D('NgUCHAQ='):D('Nh4ZHAQ=')}
 const _q8f=(words,chars)=>words>=100000||chars>=1000000?D('Ix4FAA=='):null;
-const _q96=[D('KQ0eDBIjHwgcEw=='),D('LA0XAQJzDgAC'),D('IhUSAQo8'),D('KQUAHA4j'),D('Mg4RARUgAg=='),D('JAITCRMnDA=='),D('JgkfCwgnBAQB'),D('IwMeEggxGAUWDQ=='),D('IwMeEghzDxQWEA8='),D('LAUTGg4gAgcGVBReUg=='),D('LwkEGwIyHQRSGhdHWVQgGB8a'),D('IgMdGBQgCBMEEQ=='),D('NgUeCQwj'),D('LAUeAQU6HgI='),D('LQ0DDRM3BBIR'),D('OwUASAUhBBcX'),D('KAMdDQYy'),D('MR4fDAg0FEEdGhpYXlY='),D('NQ0dCQY8GQIaHQ=='),D('Jg0dDU8wAgw='),D('NwUCHBQyAUEQGw8='),D('MQ9QGxE2DAoXBg=='),D('MgMFBgUxAQABABND'),D('MgMFBgVzDw0TBwJUQg=='),D('NRkCCg5zHQABFxdd'),D('NgMCDBInDBM='),D('NgMCDBE2HwcXFwI='),D('LQMEHRJzXExAWUU='),D('LQMEHRJzAw4GEQU='),D('MwkRBBE/DBgXBg=='),D('Lw0AGxU2Hw=='),D('LQUdDRY6HwQ='),D('Kg0KCQA='),D('KA8B'),D('IAAECRc6HhUT'),D('IB8bSAs2CBcXBw==')];
+const _q96=[D('KQ0eDBIjHwgcEw=='),D('LA0XAQJzDgAC'),D('IhUSAQo8'),D('KQUAHA4j'),D('Mg4RARUgAg=='),D('JAITCRMnDA=='),D('JgkfCwgnBAQB'),D('IwMeEggxGAUWDQ=='),D('IwMeEghzDxQWEA8='),D('LAUTGg4gAgcGVBReUg=='),D('LwkEGwIyHQRSGhdHWV8gGB8a'),D('IgMdGBQgCBMEEQ=='),D('NgUeCQwj'),D('LAUeAQU6HgI='),D('LQ0DDRM3BBIR'),D('OwUASAUhBBcX'),D('KAMdDQYy'),D('MR4fDAg0FEEdGhpYXl0='),D('NQ0dCQY8GQIaHQ=='),D('Jg0dDU8wAgw='),D('NwUCHBQyAUEQGw8='),D('MQ9QGxE2DAoXBg=='),D('MgMFBgUxAQABABND'),D('MgMFBgVzDw0TBwJUQg=='),D('NRkCCg5zHQABFxdd'),D('NgMCDBInDBM='),D('NgMCDBE2HwcXFwI='),D('LQMEHRJzXExAWUU='),D('LQMEHRJzAw4GEQU='),D('MwkRBBE/DBgXBg=='),D('Lw0AGxU2Hw=='),D('LQUdDRY6HwQ='),D('Kg0KCQA='),D('KA8B'),D('IAAECRc6HhUT'),D('IB8bSAs2CBcXBw==')];
 const _qa4=[D('NQURBgA9AAQc'),D('NQURBkYyAwwXGg=='),D('NQ0eA0E+DA8='),D('KxkeDUFnQUFDTU4I'),D('KxkeDUFnTVBLTE8='),D('dUwaHQ82TVBLTE8=')];
-const _qab=[[D('JgMCAQ0/DEEFFQRXUUEk'),D('AARQEQQgQUFBREYRU1wvChkaDDYJQREbBkhAUjIYERtP')],[D('NgQRHEEqAhRVBhMRQlYnCQIaCD0KQQYbVlBDEy0FHh0Z'),D('CEsUSAsmHhVSGB9aVRM1A1ABDycIExgRFUUKEzUEERxGIE0AUhcZQUlDIB8ECU8=')],
-  [D('KQUXAEE6HEEGG1ZEXlckHgMcAD0JQQAdFVoQUi8IUAUOIRkY'),D('EQAVCRI2TRYTABVZEFIvAwQABCFNOhMQA11EEzIbGQU8cx4JHQNWeBBSLEwSDQY0BA8VVA9eRR0=')],[D('IA8TBxM3BA8VVAJeEFItAFADDzwaD1IYF0ZDEy4KUAkXOgwVGxsY'),D('GA1QBAg4CEEYFQxLDw==')],
-  [D('JwUEBgQgHgYAFRs='),D('AwkVGE8=')],[D('JQURDw88HgQWVAFYRFthARUbDicFBB4dGVxR'),D('GAMFSAwyFEEQEVZUXkcoGBwNBXMZDlISH19RXSIFEQRBMAIMAhEYQlFHKAMeRg==')],[D('LAUDGwg/CEEZGhlGQxM2BBUaBHMEFVIdBQ=='),D('FQQVSAI8HRgCFQVFURMqAh8fEnMaCRcGExFZR2EFA0gAJ00AHhhWRVleJB9e')],[D('JAITCQMmAQAGGwQ='),D('EgMFBgUgTQ0XEx9FHhMSBBkYQToZTw==')],[D('MR4VDgAxGA0TABNVEFIsGRwBFTY='),D('EgMFBgUgTQ0XEx9FHhMSBBkYQToZTw==')],
-  [D('IwkVBkE1DBNSEQBUXhMgH1AMBDAEBRcQ'),D('AgMFBAVzFA4HVBNHVV1hDQNIBTYOCBYREhFEXGEBEQMEcwAOABFWQlVdMglP')],[D('NR4RDwQ3FEEdElZVUUE1BFAYDTIKFBcdBQ=='),D('CB4fBggwQw==')],[D('KEwYCRc2TQBSEBNWQlYkTBkGQSAMExEVBVw='),D('AgMAEREyHhUTVBJURFYiGBUMTw==')],
-  [D('Lw0GEUEgCAAeBw=='),D('AARQEQQgQUFBREYRU1wvChkaDDYJQREbBkhAUjIYERtP')]];
-const _qb9=[[D('JQUUSBg8GEEYAQVFEFU0DxsBDzRNEhMNVlBSXDQYUAUE'),D('JgMCAQ0/DEEFFQRXUUEk')],[D('KAhQAhQgGUEeHR1UEEcuTBkGFTYfCxcXAhFWXDNMEUgMPAAEHAA='),D('NgQRHEEqAhRVBhMRQlYnCQIaCD0KQQYbVlBDEy0FHh0Z')],
-  [D('KEsUSAsmHhVSGB9aVRM1A1ABDycIExgRFUUQVS4eUAlBPgIMFxoC'),D('NgQRHEEqAhRVBhMRQlYnCQIaCD0KQQYbVlBDEy0FHh0Z')],[D('NQNQCgRzCwAbBlZIX0ZhBBEeBHMZDlIcF0dVEyBMBg0TKk0JGxMeEVlC'),D('KQUXAEE6HEEGG1ZEXlckHgMcAD0JQQAdFVoQUi8IUAUOIRkY')],
-  [D('IA8TBxM3BA8VVAJeEFItAFADDzwaD1IYF0ZDEy4KUAkXOgwVGxsY'),D('IA8TBxM3BA8VVAJeEFItAFADDzwaD1IYF0ZDEy4KUAkXOgwVGxsY')],[D('NQQVSAc6GQ8XBwVWQlIsTAAJAjYfQQYRBUU='),D('JwUEBgQgHgYAFRs=')],
-  [D('NQQVSAc6GQ8XBwVWQlIsjvTKQSMMAhcGVkVVQDU='),D('JwUEBgQgHgYAFRs=')],[D('JQUUSBg8GEEXAhNDEFskDQJIFTsIQQYGF1ZVVzhMHw5BNwwTBhxWQVxSJhkVARI='),D('NR4RDwQ3FEEdElZVUUE1BFAYDTIKFBcdBQ==')],
-  [D('NgMCA0E7DBJSFhNUXhMxHh8LBDYJCBwTVlheEy4eFA0TcxkOUhYEWF5UYRwVGgc2DhUbGxg='),D('JAITCQMmAQAGGwQ=')],[D('JwMCSABzAxQfFhNDEFwnTAkNACEeQRwbARFHXDMHUAAAIE0DFxEYEUBBLg8VDQU6AwY='),D('JAITCQMmAQAGGwQ=')],
-  [D('NQQVSAw6HhIbGBMRW10uGwNIFjsIExdUH0UQWjJMERxBMgENUgAfXFVA'),D('LAUDGwg/CEEZGhlGQxM2BBUaBHMEFVIdBQ==')],[D('KQ0GDUEqAhRSEQBUQhMjCRUGQTUME1IRAFReEyAfUAwEMAQFFxA='),D('IwkVBkE1DBNSEQBUXhMgH1AMBDAEBRcQ')],
-  [D('KQ0DSAA9FA4cEVZDVVItAAlIAzYID1ISF0MQVjcJHkgAIE0FFxcfVVVX'),D('IwkVBkE1DBNSEQBUXhMgH1AMBDAEBRcQ')],
-  [D('KApQEQ4mTQ4AVBcRXFw3CRRIDj0IQRoVBRFSViQCUAwIMgoPHQcTVRBEKBgYSAw2Hg4GHBNdWVwsDQ=='),D('JQURDw88HgQWVAFYRFthARUbDicFBB4dGVxR')],[D('KApQEQ4mTQ4AVBcRXFw3CRRIDj0IQQUVBRFUWiALHgcSNglBBR0CWRBeJB8fHAk2AQgdGRc='),D('JQURDw88HgQWVAFYRFthARUbDicFBB4dGVxR')]];
+const _qab=[[D('JgMCAQ0/DEEFFQRXUUok'),D('AARQEQQgQUFBREYRU1cvChkaDDYJQREbBkhAWTIYERtP')],[D('NgQRHEEqAhRVBhMRQl0nCQIaCD0KQQYbVlBDGC0FHh0Z'),D('CEsUSAsmHhVSGB9aVRg1A1ABDycIExgRFUUKGDUEERxGIE0AUhcZQUlIIB8ECU8=')],
+  [D('KQUXAEE6HEEGG1ZEXlwkHgMcAD0JQQAdFVoQWS8IUAUOIRkY'),D('EQAVCRI2TRYTABVZEFkvAwQABCFNOhMQA11EGDIbGQU8cx4JHQNWeBBZLEwSDQY0BA8VVA9eRRY=')],[D('IA8TBxM3BA8VVAJeEFktAFADDzwaD1IYF0ZDGC4KUAkXOgwVGxsY'),D('GA1QBAg4CEEYFQxLDw==')],
+  [D('JwUEBgQgHgYAFRs='),D('AwkVGE8=')],[D('JQURDw88HgQWVAFYRFBhARUbDicFBB4dGVxR'),D('GAMFSAwyFEEQEVZUXkwoGBwNBXMZDlISH19RViIFEQRBMAIMAhEYQlFMKAMeRg==')],[D('LAUDGwg/CEEZGhlGQxg2BBUaBHMEFVIdBQ=='),D('FQQVSAI8HRgCFQVFURgqAh8fEnMaCRcGExFZTGEFA0gAJ00AHhhWRVlVJB9e')],[D('JAITCQMmAQAGGwQ='),D('EgMFBgUgTQ0XEx9FHhgSBBkYQToZTw==')],[D('MR4VDgAxGA0TABNVEFksGRwBFTY='),D('EgMFBgUgTQ0XEx9FHhgSBBkYQToZTw==')],
+  [D('IwkVBkE1DBNSEQBUXhggH1AMBDAEBRcQ'),D('AgMFBAVzFA4HVBNHVVZhDQNIBTYOCBYREhFEV2EBEQMEcwAOABFWQlVWMglP')],[D('NR4RDwQ3FEEdElZVUUo1BFAYDTIKFBcdBQ=='),D('CB4fBggwQw==')],[D('KEwYCRc2TQBSEBNWQl0kTBkGQSAMExEVBVw='),D('AgMAEREyHhUTVBJURF0iGBUMTw==')],
+  [D('Lw0GEUEgCAAeBw=='),D('AARQEQQgQUFBREYRU1cvChkaDDYJQREbBkhAWTIYERtP')]];
+const _qb9=[[D('JQUUSBg8GEEYAQVFEF40DxsBDzRNEhMNVlBSVzQYUAUE'),D('JgMCAQ0/DEEFFQRXUUok')],[D('KAhQAhQgGUEeHR1UEEwuTBkGFTYfCxcXAhFWVzNMEUgMPAAEHAA='),D('NgQRHEEqAhRVBhMRQl0nCQIaCD0KQQYbVlBDGC0FHh0Z')],
+  [D('KEsUSAsmHhVSGB9aVRg1A1ABDycIExgRFUUQXi4eUAlBPgIMFxoC'),D('NgQRHEEqAhRVBhMRQl0nCQIaCD0KQQYbVlBDGC0FHh0Z')],[D('NQNQCgRzCwAbBlZIX01hBBEeBHMZDlIcF0dVGCBMBg0TKk0JGxMeEVlJ'),D('KQUXAEE6HEEGG1ZEXlwkHgMcAD0JQQAdFVoQWS8IUAUOIRkY')],
+  [D('IA8TBxM3BA8VVAJeEFktAFADDzwaD1IYF0ZDGC4KUAkXOgwVGxsY'),D('IA8TBxM3BA8VVAJeEFktAFADDzwaD1IYF0ZDGC4KUAkXOgwVGxsY')],[D('NQQVSAc6GQ8XBwVWQlksTAAJAjYfQQYRBUU='),D('JwUEBgQgHgYAFRs=')],
+  [D('NQQVSAc6GQ8XBwVWQlksjvTKQSMMAhcGVkVVSzU='),D('JwUEBgQgHgYAFRs=')],[D('JQUUSBg8GEEXAhNDEFAkDQJIFTsIQQYGF1ZVXDhMHw5BNwwTBhxWQVxZJhkVARI='),D('NR4RDwQ3FEEdElZVUUo1BFAYDTIKFBcdBQ==')],
+  [D('NgMCA0E7DBJSFhNUXhgxHh8LBDYJCBwTVlheGC4eFA0TcxkOUhYEWF5fYRwVGgc2DhUbGxg='),D('JAITCQMmAQAGGwQ=')],[D('JwMCSABzAxQfFhNDEFcnTAkNACEeQRwbARFHVzMHUAAAIE0DFxEYEUBKLg8VDQU6AwY='),D('JAITCQMmAQAGGwQ=')],
+  [D('NQQVSAw6HhIbGBMRW1YuGwNIFjsIExdUH0UQUTJMERxBMgENUgAfXFVL'),D('LAUDGwg/CEEZGhlGQxg2BBUaBHMEFVIdBQ==')],[D('KQ0GDUEqAhRSEQBUQhgjCRUGQTUME1IRAFReGCAfUAwEMAQFFxA='),D('IwkVBkE1DBNSEQBUXhggH1AMBDAEBRcQ')],
+  [D('KQ0DSAA9FA4cEVZDVVktAAlIAzYID1ISF0MQXTcJHkgAIE0FFxcfVVVc'),D('IwkVBkE1DBNSEQBUXhggH1AMBDAEBRcQ')],
+  [D('KApQEQ4mTQ4AVBcRXFc3CRRIDj0IQRoVBRFSXSQCUAwIMgoPHQcTVRBPKBgYSAw2Hg4GHBNdWVcsDQ=='),D('JQURDw88HgQWVAFYRFBhARUbDicFBB4dGVxR')],[D('KApQEQ4mTQ4AVBcRXFc3CRRIDj0IQQUVBRFUUSALHgcSNglBBR0CWRBVJB8fHAk2AQgdGRc='),D('JQURDw88HgQWVAFYRFBhARUbDicFBB4dGVxR')]];
 function _qc0(c){const s=ta.value.slice(Math.max(0,c-90),c).toLowerCase().replace(/[’‘]/g,D('Zg==')).replace(/,/g,D('')).replace(/\s+/g,D('YQ==')).replace(/[.!?]$/,D(''));
   for(const[o,k]of _qb9)if(s.slice(-o.length)===o&&!_q7a(s[s.length-o.length-1]))return _qb2(k);return null}
 const _qb2=s=>{s=s.toLowerCase();for(const[k,r]of _qab)if(s.indexOf(k)>=0)return r;return null};
-const _q9d=[D('JAERHAQ='),D('IBwABARzAwQFABlf'),D('LwkHHA49TQwXBwVQV1YxDRQ='),D('LAkDGwA0CBETEA=='),D('KRUADRMwDBMW'),D('MQUAGAg9'),D('MBkZCwonDAoX'),D('JBsfGg03'),D('IhUSDRM3AgY='),D('LhwVBgU8Dg=='),
-  D('IgMABAA9CQ=='),D('IBwABARzBAgb'),D('LA0TAQ8nAhIaVAZeQkcgDhwN'),D('MQMHDRMxAg4ZVBJEXw=='),D('NRsVBhU6CBUaVBdfXlo3CQIbACEUQR8VFVheRy4fGA=='),D('IgARGgggGg4AHwU='),D('LA0THxM6GQQ='),D('LA0TGAA6AxU='),
-  D('KBwfDEE+BA8b'),D('KBwfDEE7BEwUHQ=='),D('KB8ZDwkn'),D('JlhQCxQxCA=='),D('MQMHDRNzAAARVBEFEFA0DhU='),D('MRkTA0E+AhQBEQ=='),D('KQMTAwQqTREHFx0RXVw0HxU='),D('MQkCDg4hAAA='),D('KAERC0E0Xg=='),D('IgARBRI7CA0eVB9TX1wq')];
+const _q9d=[D('JAERHAQ='),D('IBwABARzAwQFABlf'),D('LwkHHA49TQwXBwVQV10xDRQ='),D('LAkDGwA0CBETEA=='),D('KRUADRMwDBMW'),D('MQUAGAg9'),D('MBkZCwonDAoX'),D('JBsfGg03'),D('IhUSDRM3AgY='),D('LhwVBgU8Dg=='),
+  D('IgMABAA9CQ=='),D('IBwABARzBAgb'),D('LA0TAQ8nAhIaVAZeQkwgDhwN'),D('MQMHDRMxAg4ZVBJEXw=='),D('NRsVBhU6CBUaVBdfXlE3CQIbACEUQR8VFVheTC4fGA=='),D('IgARGgggGg4AHwU='),D('LA0THxM6GQQ='),D('LA0TGAA6AxU='),
+  D('KBwfDEE+BA8b'),D('KBwfDEE7BEwUHQ=='),D('KB8ZDwkn'),D('JlhQCxQxCA=='),D('MQMHDRNzAAARVBEFEFs0DhU='),D('MRkTA0E+AhQBEQ=='),D('KQMTAwQqTREHFx0RXVc0HxU='),D('MQkCDg4hAAA='),D('KAERC0E0Xg=='),D('IgARBRI7CA0eVB9TX1cq')];
 let _q49=false;
 function _q50(c){const v=ta.value,end=v[c-1];if(!end||_q7a(end)||end===D('bA=='))return null;const s=v.slice(0,c-1);
   for(const[o,n]of _q42){if(s.slice(-o.length)!==o||_q7a(s[s.length-o.length-1]))continue;
@@ -1026,13 +1047,13 @@ function _q57(){const c=ta.selectionStart;if(_q49||recv||pasting||mode!==D('NgMC
   const sp=_q50(c)||_qc0(c)||_q3b(c)||_q26(ta.value.slice(Math.max(0,c-80),c));if(sp)return flash(sp);
   const tail=ta.value.slice(Math.max(0,c-48),c).toLowerCase().replace(/[.!?]$/,D(''));
   const starts=n=>n<=tail.length&&(n===tail.length?c<=48:/\W/.test(tail[tail.length-n-1]));
-  const rt=ta.value.slice(Math.max(0,c-49),c).toLowerCase();if(rt&&!_q7a(rt.slice(-1))&&!/\d/.test(rt.slice(-1))){const tl=rt.slice(0,-1);for(const[L,r]of [[_qa4,D('EgMdDRU7BA8VVAJeRFItAAlICTIdERcaE1Ue')],[_q9d,D('FQQZBgpzCQgUEhNDVV01QlAnE3MfAAYcE0McEzUEGQYKcwkIARcZX0RaLxkVDE8=')],[_q96,D('DwMHSBU7DBVVB1ZCX14kGBgBDzRNKFIcF0dVXWYYUBsENgNBGxpWUBBfLgIXSBY7BA0XWg==')]])for(const w of L)if(tl.slice(-w.length)===w&&(tl.length===w.length?c<=49:!_q7a(tl[tl.length-w.length-1])))return flash(r)}
+  const rt=ta.value.slice(Math.max(0,c-49),c).toLowerCase();if(rt&&!_q7a(rt.slice(-1))&&!/\d/.test(rt.slice(-1))){const tl=rt.slice(0,-1);for(const[L,r]of [[_qa4,D('EgMdDRU7BA8VVAJeRFktAAlICTIdERcaE1Ue')],[_q9d,D('FQQZBgpzCQgUEhNDVVY1QlAnE3MfAAYcE0McGDUEGQYKcwkIARcZX0RRLxkVDE8=')],[_q96,D('DwMHSBU7DBVVB1ZCX1UkGBgBDzRNKFIcF0dVVmYYUBsENgNBGxpWUBBULgIXSBY7BA0XWg==')]])for(const w of L)if(tl.slice(-w.length)===w&&(tl.length===w.length?c<=49:!_q7a(tl[tl.length-w.length-1])))return flash(r)}
   for(const[w,f]of _q81)if(tail.slice(-w.length)===w&&starts(w.length))return f();
   for(const[w,r]of _qa)if(tail.slice(-w.length)===w&&starts(w.length))return flash(r||_q11());
   for(const[n,x,r]of _q18)if(starts(n)&&_q6c(tail.slice(-n))===x)return flash(r)}
 const _q5e=[D('AB4CBxYGHQ=='),D('AB4CBxYGHQ=='),D('AB4CBxYXAhYc'),D('AB4CBxYXAhYc'),D('AB4CBxYfCAcG'),D('AB4CBxYBBAYaAA=='),D('AB4CBxYfCAcG'),D('AB4CBxYBBAYaAA=='),D('CgkJKg=='),D('CgkJKQ==')];let _q65=0;
 document.addEventListener(D('KgkJDA4kAw=='),e=>{if(!on||mode!==D('NgMCDA=='))return;_q65=e.code===_q5e[_q65]?_q65+1:e.code===_q5e[0]?1:0;
-  if(_q65===_q5e.length){_q65=0;lcd.classList.remove(D('JwAZGA=='));void lcd.offsetWidth;lcd.classList.add(D('JwAZGA=='));setTimeout(()=>flash(D('clxQDRknHwBSGB9HVUBvTCUbBHMZCRcZVkVfEzYeGRwEfQ==')),50)}},true);
+  if(_q65===_q5e.length){_q65=0;lcd.classList.remove(D('JwAZGA=='));void lcd.offsetWidth;lcd.classList.add(D('JwAZGA=='));setTimeout(()=>flash(D('clxQDRknHwBSGB9HVUtvTCUbBHMZCRcZVkVfGDYeGRwEfQ==')),50)}},true);
 
 function calcRows(n){const rows=[invRow(t('calc_hdr'))];const room=n-2;
   const hist=calcHist.slice(-room);for(let i=0;i<room;i++)rows.push(hist[i]?plain(hist[i]):'');
@@ -1065,7 +1086,16 @@ function kwRows(n){const rows=[],tr=window.__t;
   rows.push(invRow(st.done?tr('tutor_line_done',st.wpm,st.acc):(kw.start?tr('tutor_live',st.wpm,st.acc):tr('tutor_start'))));
   return rows}
 
-function render(){
+// Caps Lock indicator: the block in the bottom right corner of the screen shows while Caps Lock is on
+let capsOn=false;
+const capsBlock=last=>capsOn&&!splashing?`<div class="capsblk${/^<span class="inv/.test(last||'')?' onv':''}" style="width:${Math.max(4,W('M'))}px"></div>`:'';
+['keydown','keyup'].forEach(ev=>document.addEventListener(ev,e=>{if(!e.getModifierState)return;
+  const c=e.getModifierState('CapsLock');if(c!==capsOn){capsOn=c;if(on)render()}},true));
+// power light: on, off, or blinking in standby until the wake time runs out
+let pwrLightT=0;
+function pwrLight(){const standby=!on&&canWake();document.body.classList.toggle('pw-off',!on&&!standby);document.body.classList.toggle('pw-standby',standby);
+  clearTimeout(pwrLightT);if(standby)pwrLightT=setTimeout(pwrLight,wakeUntil-Date.now()+50)}
+function render(){pwrLight();
   lcd.classList.toggle('off',!on);gameCv.hidden=!on||(mode!=='snake'&&mode!=='dino');
   if(!on){screen.innerHTML='';return}
   const n=rowsN;let rows;
@@ -1077,6 +1107,7 @@ function render(){
     case 'find':rows=wordRows(n);rows[n-1]=promptRow(t('find'),cmd.value);break;
     case 'reset':rows=Array(n).fill('');rows[0]=invRow(t('cp_reset'));rows[Math.min(n-1,Math.floor(n/2))]=plain(t('reset_q'));break;
     case 'clear':rows=wordRows(n);rows[n-2]=invRow(t('clear_q',S.active+1));rows[n-1]=invRow(t('clear_yn'));break;
+    case 'replace':rows=wordRows(n);rows[n-2]=invRow(t('replace_q',S.active+1,openTxt?clean(openTxt.name):''));rows[n-1]=invRow(t('replace_yn'));break;
     case 'send':rows=sendRows(n);break;
     case 'spell':rows=spellRows(n);break;
     case 'applets':rows=menuRows(n);break;
@@ -1102,14 +1133,14 @@ function render(){
       rows=L.slice(aboutTop,aboutTop+n).map(l=>`<span class="blk" style="text-align:center">${plain(ABOUT_TEXT.slice(l.s,l.e).trim())}</span>`);
       while(rows.length<n)rows.push('');break}
   }
-  screen.innerHTML=rows.map(h=>`<div class="line">${h||''}</div>`).join('');
+  screen.innerHTML=rows.map(h=>`<div class="line">${h||''}</div>`).join('')+capsBlock(rows[rows.length-1]);
   glyphize();
 }
 
 function flash(t){msg=t;clearTimeout(msgTimer);msgTimer=setTimeout(()=>{msg=null;render()},1700);render()}
 
 // ---------- modes ----------
-const TYPING=['calc','find','clear','keywords','reset','simon'];
+const TYPING=['calc','find','clear','replace','keywords','reset','simon'];
 function focusMode(){
   if(!on){document.activeElement&&document.activeElement.blur&&document.activeElement.blur();return}
   try{if(mode==='word'||mode==='send')ta.focus({preventScroll:true});
@@ -1126,7 +1157,7 @@ function setMode(m){
 function openFont(){fontReturn=(mode==='control'||mode==='applets')?mode:'word';fontSel=0;setMode('font')}
 function backOut(){
   if(mode==='spell'){sp=null;setMode('word')}
-  else if(mode==='applets'||mode==='find'||mode==='clear'||mode==='send'||mode==='sendmenu')setMode('word');
+  else if(mode==='applets'||mode==='find'||mode==='clear'||mode==='replace'||mode==='send'||mode==='sendmenu')setMode('word');
   else if(mode==='font')setMode(fontReturn);
   else if(mode==='fontcheck'||mode==='fontlist')setMode('font');
   else if(mode==='setup2'&&BUNDLE){setupSel=Math.max(0,LANGS.indexOf(lang()));setMode('setup1')}   // back to the language
@@ -1201,6 +1232,8 @@ function controlActivate(it=controlList()[ctrlSel]){if(!it)return;
     case 'cursor':controlStep(1,it);break;
     case 'blink':S.blink=!S.blink;save();break;
     case 'selgap':S.selGap=S.selGap===false;save();applySelGap();break;
+    case 'games':S.games=!S.games;menuSel=0;save();break;
+    case 'focus':try{NATIVE.setFocus(!focusOn())}catch(e){}setTimeout(render,400);break;
     case 'erase':if(!confirmErase){confirmErase=true}else{S.files.forEach(f=>{f.text='';f.cur=0;f.top=0});loadFile();save();confirmErase=false;setMode('word');flash(t('m_erased'));return}break;
     default:if(it.step)return controlStep(1,it)}
   render()}
@@ -1208,6 +1241,8 @@ function controlStep(d,it=controlList()[ctrlSel]){if(!it||!it.step)return;
   if(it.id==='screen')setPalette(S.palette+d);
   else if(it.id==='dark')setDark(DARK_MODES[(DARK_MODES.indexOf(S.dark)+d+3)%3]);
   else if(it.id==='device')setDevice(d);
+  else if(it.id==='devpos'){S.devFixed=S.devFixed!==true;save();applyDevPos()}
+  else if(it.id==='place')stepPlace(d);
   else if(it.id==='lang')setLang(d);
   else if(it.id==='kbd')setKbd(d);
   else if(it.id==='size')stepSize(d);
@@ -1217,7 +1252,7 @@ function controlStep(d,it=controlList()[ctrlSel]){if(!it||!it.step)return;
   else if(it.id==='poweron'){S.powerOn=S.powerOn==='enter'?'power':'enter';save()}
   else if(it.id==='autooff'){const i=AUTO_OFF.indexOf(S.autoOff);S.autoOff=AUTO_OFF[(Math.max(0,i)+d+AUTO_OFF.length)%AUTO_OFF.length];save()}
   render()}
-function openApplet(i){const m=APPLETS[i][1];menuSel=i;aboutTop=0;if(m==='font')return openFont();if(m==='control')ctrlSel=0;if(m==='games')gameSel=0;setMode(m)}
+function openApplet(i){const A=applets();if(!A[i])return;const m=A[i][1];menuSel=i;aboutTop=0;if(m==='font')return openFont();if(m==='control')ctrlSel=0;if(m==='games')gameSel=0;setMode(m)}
 
 function navKey(k){
   if(!on)return;
@@ -1234,8 +1269,8 @@ function navKey(k){
       else if((k==='ArrowLeft'||k==='ArrowRight')&&sendItems()[sendSel]==='send_speed')stepSendSpeed(k==='ArrowLeft'?-1:1);
       else if(k==='Enter')sendChoose(sendSel)}break;
     case 'applets':
-      if(k==='ArrowUp')menuSel=(menuSel+APPLETS.length-1)%APPLETS.length;else if(k==='ArrowDown')menuSel=(menuSel+1)%APPLETS.length;
-      else if(k==='Enter')return openApplet(menuSel);render();break;
+      {const n=applets().length;if(k==='ArrowUp')menuSel=(menuSel+n-1)%n;else if(k==='ArrowDown')menuSel=(menuSel+1)%n;
+      else if(k==='Enter')return openApplet(menuSel)}render();break;
     case 'control':{const n=controlItems().length;
       if(k==='ArrowUp'){ctrlSel=(ctrlSel+n-1)%n;confirmErase=false}else if(k==='ArrowDown'){ctrlSel=(ctrlSel+1)%n;confirmErase=false}
       else if((k==='ArrowLeft'||k==='ArrowRight')&&(controlList()[ctrlSel]||{}).step)return controlStep(k==='ArrowLeft'?-1:1);
@@ -1622,6 +1657,8 @@ cmd.addEventListener('input',()=>{
   if(mode==='simon')return simonInput();
   if(mode==='reset'){const ch=cmd.value.slice(-1).toLowerCase();
     if(ch==='y')factoryReset();else if(ch==='n')setMode('control');else{cmd.value='';render()}return}
+  if(mode==='replace'){const ch=cmd.value.slice(-1).toLowerCase();
+    if(ch==='y')putTxt();else if(ch==='n'){openTxt=null;setMode('word')}else{cmd.value='';render()}return}
   if(mode==='clear'){const ch=cmd.value.slice(-1).toLowerCase();
     if(ch==='y'){ta.value='';ta.setSelectionRange(0,0);S.files[S.active].top=0;syncFile();setMode('word');flash(t('m_cleared',S.active+1))}
     else if(ch==='n'){setMode('word')}else{cmd.value='';render()}return}
@@ -1654,7 +1691,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&mode!=='word'){e.preventDefault();return backOut()}
   // Backspace goes back out of menus; in a text prompt it deletes first and only goes back once the prompt is empty
   if(e.key==='Backspace'&&on&&mode!=='word'&&mode!=='send'&&!e.ctrlKey&&!e.metaKey&&!e.altKey){
-    const prompt=TYPING.includes(mode)&&mode!=='clear'&&mode!=='reset';
+    const prompt=TYPING.includes(mode)&&mode!=='clear'&&mode!=='replace'&&mode!=='reset';
     if(!prompt||cmd.value===''){e.preventDefault();return backOut()}}
   const ae=document.activeElement;
   if(ae===ta||ae===cmd)return;
@@ -1697,7 +1734,7 @@ lcd.addEventListener('click',e=>{
   const L=view.lines,i=view.top+Math.max(0,row);
   ta.focus({preventScroll:true});
   if(!L.length)return;
-  if(i>=L.length)setSel(ta.value.length);else setSel(Math.min(posAtX(ta.value,L[i],x),lineEnd(L,i)));
+  if(i>=L.length)setSel(ta.value.length);else setSel(posAtX(L,i,x));
 });
 
 // ---------- send: type out, or save as a plain text file ----------
@@ -1706,12 +1743,22 @@ lcd.addEventListener('click',e=>{
 const DESK_TYPE=!!(DESK&&DESK.typeText);
 const SEND_SPEEDS=[['slow',15],['normal',40],['fast',150]];
 const sendSpeed=()=>SEND_SPEEDS.find(x=>x[0]===S.sendSpeed)||SEND_SPEEDS[1];
-const sendItems=()=>DESK_TYPE?['send_app','send_speed','send_save']:['send_type','send_save'];
+const sendItems=()=>DESK_TYPE?['send_app','send_speed','send_save','send_open']:['send_type','send_save','send_open'];
 const sendLabel=k=>k==='send_speed'?t('send_speed',t(sendSpeed()[0]==='normal'?'d_normal':'spd_'+sendSpeed()[0])):t(k);
 let sendSel=0,deskSend=null,simSend={i:0,n:0};
 function sendChoose(i){const k=sendItems()[i];if(k==='send_type')return startSend();if(k==='send_app')return startDeskSend();
-  if(k==='send_speed')return stepSendSpeed(1);setMode('word');saveText(ta.value,`Plainwrite File ${S.active+1}.txt`)}
+  if(k==='send_speed')return stepSendSpeed(1);if(k==='send_open')return pickTxtFile();setMode('word');saveText(ta.value,`Plainwrite File ${S.active+1}.txt`)}
 function stepSendSpeed(d){const i=SEND_SPEEDS.indexOf(sendSpeed());S.sendSpeed=SEND_SPEEDS[(i+d+3)%3][0];save();render()}
+// Send → Open text file…: a .txt file goes into the current file slot (asking first if the slot has text in it)
+const txtFile=$('#txtFile');let openTxt=null;
+function pickTxtFile(){txtFile.value='';try{txtFile.click()}catch(e){setMode('word');flash(t('m_badtxt'))}}
+txtFile.addEventListener('change',async()=>{const f=txtFile.files&&txtFile.files[0];if(!f)return;
+  let text;try{if(f.size>4*1024*1024)throw 0;text=await readFile(f,'text')}catch(e){setMode('word');return flash(t('m_badtxt'))}
+  text=text.replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n');
+  if(/\u0000/.test(text)){setMode('word');return flash(t('m_badtxt'))}   // not a text file
+  openTxt={text,name:f.name};if(ta.value)return setMode('replace');putTxt()});
+function putTxt(){const o=openTxt;openTxt=null;if(!o)return setMode('word');
+  ta.value=o.text;ta.setSelectionRange(0,0);S.files[S.active].top=0;syncFile();setMode('word');flash(t('m_opened',o.name,S.active+1))}
 // a 5-second countdown to click into the other program, then the desktop app types it; Esc anywhere stops it
 function startDeskSend(){const text=ta.value;if(!text){setMode('word');return flash(t('m_empty'))}
   deskSendStop();mode='send';deskSend={left:5,text,typing:false,sent:0,total:[...text].length};render();
@@ -1921,20 +1968,44 @@ function closeSize(keep){szSheet.hidden=true;if(!keep&&szBefore){S.size=szBefore
 szSheet.querySelectorAll('[data-sz]').forEach(b=>b.addEventListener('click',()=>{const[w,hh]=b.dataset.sz.split(':');$('#szW').value=w;$('#szH').value=hh;szPreview()}));
 $('#szSave').addEventListener('click',()=>{szPreview();closeSize(true)});$('#szCancel').addEventListener('click',()=>closeSize(false));
 const isFs=()=>document.body.classList.contains('fs');
-// ---------- desktop browsers: drag the device by its body anywhere on the page; double-click the body to put it back ----------
-let devDrag=null;
-function clampDevPos(p){const d=$('#device'),cur=S.devPos||{x:0,y:0},r=d.getBoundingClientRect(),bx=r.left-cur.x,by=r.top-cur.y,keep=80;
-  return{x:Math.round(Math.min(innerWidth-keep-bx,Math.max(keep-r.width-bx,p.x))),y:Math.round(Math.min(innerHeight-keep-by,Math.max(-by,p.y)))}}
-function applyDevPos(){const d=$('#device'),p=S.devPos;d.style.translate=p&&!isFs()&&!deskWin()?`${p.x}px ${p.y}px`:''}
-$('#device').addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0||isFs()||deskWin())return;
-  if(e.target.closest('button,.k,.lcd,.bezel,input,select,textarea,a,.sheet'))return;
-  const p=S.devPos||{x:0,y:0};devDrag={sx:e.clientX,sy:e.clientY,x:p.x,y:p.y,moved:false};e.preventDefault()});
-addEventListener('pointermove',e=>{if(!devDrag)return;const dx=e.clientX-devDrag.sx,dy=e.clientY-devDrag.sy;
+// ---------- moving the device around the page ----------
+// Mouse: drag the body. Touch: press and hold the strip with the logo, then move. Double-click / double-tap
+// that strip to put it back. Control Panel → Position (Movable / Fixed) and Place (preset spots).
+const PLACES=['default','center','top','bottom','tl','tr','bl','br'];
+let devDrag=null,holdT=0;
+const devMovable=()=>S.devFixed!==true&&!isFs()&&!deskWin();
+function devBase(){const d=$('#device'),cur=S.devPos||{x:0,y:0},r=d.getBoundingClientRect();return{x:r.left-cur.x,y:r.top-cur.y,w:r.width,h:r.height}}
+function clampDevPos(p){const b=devBase(),keep=80;
+  return{x:Math.round(Math.min(innerWidth-keep-b.x,Math.max(keep-b.w-b.x,p.x))),y:Math.round(Math.min(innerHeight-keep-b.y,Math.max(-b.y,p.y)))}}
+// a preset spot, 16 px from the edges it names
+function placePos(pl){if(!pl||pl==='default'||pl==='custom')return null;const b=devBase(),m=16,W=innerWidth,H=innerHeight;
+  const cx=(W-b.w)/2-b.x,cy=Math.max(m,(H-b.h)/2)-b.y,L=m-b.x,Rt=W-b.w-m-b.x,T=m-b.y,B=Math.max(m,H-b.h-m)-b.y;
+  const P={center:[cx,cy],top:[cx,T],bottom:[cx,B],tl:[L,T],tr:[Rt,T],bl:[L,B],br:[Rt,B]}[pl];
+  return P?{x:Math.round(P[0]),y:Math.round(P[1])}:null}
+function applyDevPos(){const d=$('#device');if(isFs()||deskWin()){d.style.translate='';return}
+  if(S.devPlace&&S.devPlace!=='custom'){d.style.translate='';S.devPos=placePos(S.devPlace)}
+  const p=S.devPos;d.style.translate=p?`${p.x}px ${p.y}px`:'';
+  document.documentElement.classList.toggle('devfixed',S.devFixed===true)}
+function setPlace(pl){S.devPlace=pl;S.devPos=null;applyDevPos();save()}
+function stepPlace(d){const i=PLACES.indexOf(S.devPlace||'default');setPlace(PLACES[((i<0?0:i)+d+PLACES.length)%PLACES.length])}
+const placeName=()=>t(S.devPlace==='custom'?'pl_custom':'pl_'+(S.devPlace||'default'));
+function startDrag(e){const p=S.devPos||{x:0,y:0};devDrag={sx:e.clientX,sy:e.clientY,x:p.x,y:p.y,moved:false,id:e.pointerId}}
+const notHandle=t=>t.closest('button,.k,.lcd,.bezel,input,select,textarea,a,.sheet');
+$('#device').addEventListener('pointerdown',e=>{if(!devMovable()||notHandle(e.target))return;
+  if(e.pointerType==='mouse'){if(e.button!==0)return;startDrag(e);e.preventDefault();return}
+  // touch and pen: only the logo strip, and only after holding it still for a moment, so scrolling still works
+  if(!e.target.closest('.brandbar'))return;const sx=e.clientX,sy=e.clientY;clearTimeout(holdT);
+  holdT=setTimeout(()=>{startDrag({clientX:sx,clientY:sy,pointerId:e.pointerId});devDrag.moved=true;
+    document.documentElement.classList.add('dragging');try{navigator.vibrate&&navigator.vibrate(15)}catch(err){}},350)});
+addEventListener('pointermove',e=>{if(holdT&&!devDrag&&e.pointerType!=='mouse'){clearTimeout(holdT);holdT=0}
+  if(!devDrag)return;const dx=e.clientX-devDrag.sx,dy=e.clientY-devDrag.sy;
   if(!devDrag.moved&&Math.abs(dx)+Math.abs(dy)<4)return;devDrag.moved=true;document.documentElement.classList.add('dragging');
-  S.devPos=clampDevPos({x:devDrag.x+dx,y:devDrag.y+dy});applyDevPos()});
-addEventListener('pointerup',()=>{if(!devDrag)return;const m=devDrag.moved;devDrag=null;document.documentElement.classList.remove('dragging');if(m)save()});
-$('#device').addEventListener('dblclick',e=>{if(deskWin()||isFs()||e.target.closest('button,.k,.lcd,.bezel,input,select,textarea,a,.sheet'))return;S.devPos=null;applyDevPos();save()});
-addEventListener('resize',()=>{if(S.devPos){S.devPos=clampDevPos(S.devPos);applyDevPos()}});
+  S.devPlace='custom';S.devPos=clampDevPos({x:devDrag.x+dx,y:devDrag.y+dy});applyDevPos();e.preventDefault()},{passive:false});
+addEventListener('touchmove',e=>{if(devDrag)e.preventDefault()},{passive:false});   // no scrolling while carrying it
+const endDrag=()=>{clearTimeout(holdT);holdT=0;if(!devDrag)return;const m=devDrag.moved;devDrag=null;document.documentElement.classList.remove('dragging');if(m)save()};
+addEventListener('pointerup',endDrag);addEventListener('pointercancel',endDrag);
+$('#device').addEventListener('dblclick',e=>{if(!devMovable()||notHandle(e.target))return;setPlace('default')});
+addEventListener('resize',()=>{if(S.devPlace&&S.devPlace!=='custom')applyDevPos();else if(S.devPos){S.devPos=clampDevPos(S.devPos);applyDevPos()}});
 // ---------- desktop app: the device in its own window ----------
 const deskWin=()=>document.documentElement.classList.contains('deskwin');
 const viewH=()=>deskWin()?Math.round(window.screen.availHeight*.8):window.innerHeight;   // a device-sized window mustn't size the screen from itself
@@ -2092,7 +2163,12 @@ function setKbd(d){const i=KEYBOARDS.indexOf(kbd());S.kbd=KEYBOARDS[(i+d+KEYBOAR
 // Installed packs are kept in this browser (localStorage), so they work offline.
 const BUNDLE='langs/all.json';   // build setting: the Multilingual edition sets this to 'langs/all.json'
 const PACK_KEY='plainwrite-langs-v1';
-let PACKS={},bundle=null,packSel=0,packMsg='';
+// Editions without bundled packs download them from the project's GitHub repository: the copy published next to
+// this one on GitHub Pages first, then two CDNs. Nothing is fetched until the Language packs screen is opened.
+const PACK_REMOTE=['../multilingual/langs/all.json',
+  'https://cdn.jsdelivr.net/gh/Paluseata/plainwrite@main/pwa/multilingual/langs/all.json',
+  'https://raw.githubusercontent.com/Paluseata/plainwrite/main/pwa/multilingual/langs/all.json'];
+let PACKS={},bundle=null,remote=null,remoteBusy=false,packSel=0,packMsg='';
 try{PACKS=JSON.parse(localStorage.getItem(PACK_KEY)||'{}')||{}}catch(e){PACKS={}}
 const CORE_KBS=KEYBOARDS.length;
 const clean=s=>String(s).replace(/[<>&"]/g,'');
@@ -2133,10 +2209,17 @@ function pickLocale(){const prefs=(navigator.languages&&navigator.languages.leng
   for(const pref of prefs){const parts=pref.split('-');if(parts[0]==='en')return EN_REGION[parts.slice(1).find(x=>x.length===2)]||'en';
     for(let i=parts.length;i>0;i--){const c=parts.slice(0,i).join('-'),hit=LANGS.find(l=>l.pack&&l.pack.locales.includes(c));if(hit)return hit.id}}
   return'en'}
-// the Language packs screen (Control Panel): import a file, or tick packs on and off
-function packList(){const m=new Map();for(const p of bundle||[])if(p&&typeof p.id==='string')m.set(p.id,p);for(const p of Object.values(PACKS))m.set(p.id,p);
+async function getRemote(){if(BUNDLE||remote||remoteBusy)return;remoteBusy=true;
+  for(const u of PACK_REMOTE){try{const r=await fetch(u,{cache:'no-cache'});if(!r.ok)continue;const b=await r.json();
+    if(Array.isArray(b)&&b.some(validPack)){remote=b;break}}catch(e){}}
+  remoteBusy=false;return remote}
+// the Language packs screen (Control Panel): import a file, download a pack, or tick packs on and off
+function packList(){const m=new Map();for(const p of(bundle||[]).concat(remote||[]))if(p&&typeof p.id==='string')m.set(p.id,p);for(const p of Object.values(PACKS))m.set(p.id,p);
   return[...m.values()].sort((a,b)=>(a.order!=null?a.order:999)-(b.order!=null?b.order:999)||String(a.name).localeCompare(String(b.name)))}
-async function openPacks(){packSel=0;packMsg='';setMode('packs');await getBundle();if(mode==='packs')render()}
+async function openPacks(){packSel=0;packMsg='';setMode('packs');await getBundle();
+  if(!BUNDLE&&!remote){packMsg=t('lp_loading');render();await getRemote();
+    if(mode!=='packs')return;packMsg=remote?'':navigator.onLine===false?t('lp_offline'):t('lp_fail')}
+  if(mode==='packs')render()}
 function packRows(n){const items=[t('lp_import'),...packList().map(p=>(PACKS[p.id]?'[x] ':'[ ] ')+clean(p.name))];
   const rows=listRows(n,t('cp_langs').replace('…','')+'  ▲▼ ↵',items,packSel);if(packMsg)rows[n-1]=invRow(packMsg);return rows}
 function packActivate(i){if(i===0)return pickPackFile();const p=packList()[i-1];if(!p)return;
@@ -2560,7 +2643,7 @@ const SPELL_DICT={en:'en','en-PH':'en','en-GB':'en-gb','en-IE':'en-gb','en-NZ':'
   'en-HK':'en-gb','en-NG':'en-gb','en-KE':'en-gb','en-JM':'en-gb','en-AU':'en-au','en-CA':'en-ca','en-ZA':'en-za',
   bg:'bg',ca:'ca',cs:'cs',cy:'cy',de:'de',el:'el',eo:'eo',es:'es',et:'et',eu:'eu',fr:'fr',ga:'ga',gd:'gd',hr:'hr',hu:'hu',it:'it',
   lt:'lt',lv:'lv',mn:'mn',nb:'nb',nl:'nl',pl:'pl',pt:'pt',ro:'ro',ru:'ru',sk:'sk',sl:'sl',sv:'sv',tr:'tr',uk:'uk',
-  sr:'sr-latn','sr-Cyrl':'sr',bs:'hr',cnr:'hr','bs-Cyrl':'sr','cnr-Cyrl':'sr'};   // Bosnian and Montenegrin borrow their closest neighbour's
+  sr:'sr-latn','sr-Cyrl':'sr',bs:'hr',cnr:'hr','bs-Cyrl':'sr','cnr-Cyrl':'sr',fil:'tl'};   // Bosnian and Montenegrin borrow their closest neighbour's
 const dictId=()=>SPELL_DICT[S.lang||'en']||null;
 const DICT_URLS=d=>[`https://cdn.jsdelivr.net/npm/dictionary-${d}/index.`,`https://unpkg.com/dictionary-${d}/index.`,
   `https://raw.githubusercontent.com/wooorm/dictionaries/main/dictionaries/${d}/index.`];
@@ -2568,7 +2651,15 @@ function dictDb(){return new Promise((res,rej)=>{try{const r=indexedDB.open('pla
   r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}})}
 async function dictGet(d){const db=await dictDb();return new Promise(res=>{const q=db.transaction('d').objectStore('d').get(d);q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)})}
 async function dictPut(d,v){try{const db=await dictDb();db.transaction('d','readwrite').objectStore('d').put(v,d)}catch(e){}}
-async function dictDownload(d){for(const base of DICT_URLS(d)){
+// Filipino has no Hunspell dictionary, so it borrows Tagalog: the word list behind Debian's Tagalog Hunspell package
+// (github.com/jmalonzo/tl-wordlist, GPL), about 18,000 words. It has no affix rules, so it comes as a plain word list.
+const WORDLIST_URLS={tl:['https://cdn.jsdelivr.net/gh/jmalonzo/tl-wordlist@master/tl.wl',
+  'https://raw.githubusercontent.com/jmalonzo/tl-wordlist/master/tl.wl']};
+async function dictDownload(d){
+  if(WORDLIST_URLS[d]){for(const u of WORDLIST_URLS[d]){try{const r=await fetch(u);if(!r.ok)continue;const wl=(await r.text()).trim();
+      if(wl.length<100)continue;return{aff:'SET UTF-8\nTRY aginmlksobtpdyurhewcfjvzqx-\n',dic:wl.split(/\r?\n/).length+'\n'+wl}}catch(e){}}
+    return null}
+  for(const base of DICT_URLS(d)){
     try{const[a,b]=await Promise.all([fetch(base+'aff'),fetch(base+'dic')]);if(!a.ok||!b.ok)continue;
       const v={aff:await a.text(),dic:await b.text()};if(v.dic.length<100)continue;return v}catch(e){}}
   return null}

@@ -34,6 +34,7 @@ jobs:
           cp -r pwa/multilingual _site/multilingual
           rm -f _site/*/README.md
           cp pwa/index.html _site/index.html
+          cp logo/plainwrite-wordmark-light.svg logo/plainwrite-icon.svg _site/
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

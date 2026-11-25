@@ -14,7 +14,7 @@ In other words, THIS IS VIBE CODED AI SLOP!!
 
 | Folder | Platform | Notes |
 |---|---|---|
-| [`pwa/english`](pwa/english) | Web app (PWA) | English only; language packs can be imported |
+| [`pwa/english`](pwa/english) | Web app (PWA) | English only; language packs can be downloaded or imported |
 | [`pwa/multilingual`](pwa/multilingual) | Web app (PWA) | Includes 48 language packs |
 | [`android`](android) | Android (APK) | English and multilingual build variants |
 | [`tauri`](tauri) | Desktop: Windows, Mac, Linux (Tauri 2) | English and multilingual editions |
