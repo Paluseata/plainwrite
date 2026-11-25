@@ -41,7 +41,15 @@ Both app builds also check pull requests, and you can start either one by hand f
 
 ## License
 
-The code is under the [MIT License](LICENSE).
+Copyright (C) 2026 Jeremy Orpano.
+
+Plainwrite is free software: you can redistribute it and/or modify it under the terms of the
+[GNU General Public License](LICENSE) as published by the Free Software Foundation, either version 3
+of the License, or (at your option) any later version. It is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; see the license for details.
+
+Versions up to and including 1.08 were released under the MIT License. Anyone who received those
+versions keeps the rights the MIT License gave them; later versions are under the GPL.
 
 The bundled fonts keep their own licences, most of them the SIL Open Font License 1.1.
 See the **Fonts** section of [`pwa/en/README.md`](pwa/en/README.md) for the full list.
