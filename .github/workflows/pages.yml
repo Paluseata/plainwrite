@@ -2,8 +2,8 @@
 #   pwa/index.html -> /        (landing page)
 #   pwa/en/        -> /en/     (English)
 #   pwa/multi/     -> /multi/  (Multilingual)
-#   pwa/jp/        -> /j/      (Plainwrite-J, published once the folder exists)
-#   pwa/kr/        -> /k/      (Plainwrite-K, published once the folder exists)
+#   pwa/jp/        -> /j/      (Plainwrite-J: /j/ja/ and /j/en-ja/; its source/ folder isn't published)
+#   pwa/kr/        -> /k/      (Plainwrite-K: /k/ko/ and /k/en-ko/; its source/ folder isn't published)
 # The old /english/ and /multilingual/ addresses redirect to the new ones.
 # One-time setup: repo Settings → Pages → Build and deployment → Source: GitHub Actions.
 name: Publish web app
@@ -39,7 +39,8 @@ jobs:
           cp -r pwa/multi _site/multi
           if [ -d pwa/jp ]; then cp -r pwa/jp _site/j; fi
           if [ -d pwa/kr ]; then cp -r pwa/kr _site/k; fi
-          rm -f _site/*/README.md
+          rm -rf _site/j/source _site/k/source
+          find _site -name README.md -delete
 
           # Redirect the old addresses to the new ones
           redirect() {

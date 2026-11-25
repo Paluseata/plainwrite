@@ -1,0 +1,8 @@
+***** PLAINWRITE-K *****
+${APP_VER}
+Retro minimalist word processing, with Korean input.
+In the spirit of the AlphaSmart Neo and King Jim's Pomera.
+Created with Anthropic Claude. This project is unaffiliated with Renaissance Learning, King Jim or related parties.
+Hanja: LibreOffice's Hangul–Hanja table (MPL 2.0). Fonts: Galmuri and Neo DunggeunMo (OFL), and Jeongeum, after the Hunminjeongeum Haerye.
+The real thing will always have better battery life!
+Copyleft MMXXVI

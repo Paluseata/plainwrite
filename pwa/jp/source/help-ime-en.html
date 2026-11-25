@@ -1,0 +1,25 @@
+    <h3>Japanese input</h3>
+    <p>Plainwrite-J has its own Japanese input method for physical keyboards, in the style of an old word processor. Phone and tablet on-screen keyboards keep their own Japanese input, and Plainwrite-J leaves them alone.</p>
+    <ul>
+      <li><b>Input mode</b>: the badge in the top bar shows <kbd>あ</kbd> (hiragana), <kbd>カ</kbd> (katakana), <kbd>Ａ</kbd> (full-width: letters, digits and signs type as ＡＢＣ１２３, a space as a full-width space) or <kbd>A</kbd> (direct, no conversion). Tap it to switch. On a keyboard: <kbd>半角/全角</kbd>, <kbd>Ctrl</kbd>+<kbd>Space</kbd> or <kbd>Alt</kbd>+<kbd>`</kbd> switch Japanese on and off; on a Mac, <kbd>かな</kbd> and <kbd>英数</kbd>. <b>Control Panel → Japanese input</b> does the same.</li>
+      <li><b>Control Panel → Kana input</b> picks how you type kana:
+        <ul>
+          <li><b>Romaji</b> (the default): <i>ka</i> → か, <i>shi</i> or <i>si</i> → し, <i>kya</i> → きゃ, <i>nn</i> → ん, doubled consonants make っ (<i>kitte</i> → きって), <i>xa</i> or <i>la</i> → ぁ, <i>-</i> → ー. <i>z</i> then <i>h j k l</i> gives ← ↓ ↑ →, <i>z.</i> gives …. Capital letters stay as letters.</li>
+          <li><b>JIS kana</b> (たていすかんな): the kana printed on a Japanese keyboard, by key position. <kbd>@</kbd> is ゛ and <kbd>[</kbd> is ゜ (they join the kana before them). On a US keyboard ろ is on <kbd>`</kbd> and ー on <kbd>Shift</kbd>+<kbd>`</kbd>.</li>
+          <li><b>Thumb shift</b> (NICOLA, 親指シフト): the left thumb key is <kbd>無変換</kbd>, <kbd>英数</kbd> or Left <kbd>Alt</kbd>/<kbd>Option</kbd>; the right thumb key is <kbd>変換</kbd>, <kbd>かな</kbd> or <kbd>Space</kbd>. Press a letter together with a thumb key (within a tenth of a second, either order) for its shifted kana. The right thumb on its own is a space, or converts.</li>
+        </ul></li>
+      <li><b>Converting</b>: the kana you type are underlined. Press <kbd>Space</kbd> (or <kbd>変換</kbd>) to convert. The text splits into parts; the part being changed is shown in reverse, and its choices appear on the bottom line, like status messages.
+        <ul>
+          <li><kbd>Space</kbd> or <kbd>↓</kbd>: next choice. <kbd>Shift</kbd>+<kbd>Space</kbd> or <kbd>↑</kbd>: previous. <kbd>1</kbd>–<kbd>9</kbd> picks from the bottom line. <kbd>Page Down</kbd>/<kbd>Page Up</kbd> turn its pages.</li>
+          <li><kbd>←</kbd> <kbd>→</kbd> move between parts; <kbd>Shift</kbd>+<kbd>←</kbd> <kbd>→</kbd> make the current part shorter or longer.</li>
+          <li><kbd>Enter</kbd> takes the text. <kbd>Esc</kbd> or <kbd>Backspace</kbd> goes back to kana. Typing on carries on with the next word.</li>
+          <li><kbd>F6</kbd> hiragana, <kbd>F7</kbd> katakana, <kbd>F8</kbd> half-width katakana, <kbd>F9</kbd> full-width romaji, <kbd>F10</kbd> romaji. These only work while there are kana to change; the rest of the time <kbd>F1</kbd>–<kbd>F8</kbd> switch files as usual.</li>
+          <li>Choices you pick are remembered and come first next time. <b>Control Panel → Keyboard settings → Forget learned conversions</b> clears them.</li>
+        </ul></li>
+      <li>Without kana typed, <kbd>Space</kbd> types a full-width space; <kbd>Shift</kbd>+<kbd>Space</kbd> a normal one.</li>
+      <li>The dictionary is SKK-JISYO.L (about 150,000 readings). It's loaded the first time you convert, and stays on the device for offline use. Conversion works a part at a time with simple rules, like the word processors of the 1980s, so long sentences sometimes split in the wrong place: fix those with <kbd>Shift</kbd>+<kbd>←</kbd> <kbd>→</kbd>, or convert a phrase at a time.</li>
+      <li><b>Control Panel → Wide letters</b> draws all Latin letters, digits and signs full-width on the screen, like an old word processor, and the Russian letters too, with Pixel Gothic's wide shapes. It only changes how text looks; the file keeps normal letters. Unicode has no full-width Cyrillic, so other Cyrillic letters (Ї, Ў, Қ…) stay narrow.</li>
+      <li><b>Control Panel → Device labels</b> switches the keys between English and Japanese (電源, 印刷, ファイル１…). Until you set it, they follow the menu language. Long labels are squeezed to fit their keys.</li>
+      <li><b>Pixel Gothic</b> is the default font, with every kana and the common kanji. When Japanese is in use (Japanese menus, or Japanese in the file), a font without Japanese gives way to Pixel Gothic for the whole screen, so every line stays in one font. To keep your font and borrow only the Japanese letters from Pixel Gothic, set <b>Control Panel → Japanese in other fonts</b> to <b>Blend</b>, the way early Japanese computers mixed fonts.</li>
+    </ul>
+

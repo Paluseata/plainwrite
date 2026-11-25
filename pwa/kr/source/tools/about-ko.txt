@@ -1,0 +1,9 @@
+플레인라이트 K
+${APP_VER}
+정겹고 단출한
+워드프로세서 전용기 시뮬레이터
+AlphaSmart Neo와 킹짐의 포메라를 본떠서.
+Anthropic Claude로 만듦. Renaissance Learning, 킹짐과는 관계없습니다.
+한자 사전: LibreOffice 한글–한자 표 (MPL 2.0)
+글꼴: 갈무리, Neo 둥근모 (OFL), 훈민정음 해례본을 본뜬 정음
+Copyleft MMXXVI

@@ -1,0 +1,8 @@
+***** PLAINWRITE-J *****
+${APP_VER}
+Retro minimalist word processing, with Japanese input.
+In the spirit of the AlphaSmart Neo and King Jim's Pomera.
+Created with Anthropic Claude. This project is unaffiliated with Renaissance Learning, King Jim or related parties.
+Dictionary: SKK-JISYO.L (GPL v2 or later). Font: Pixel Gothic J, from DotGothic16 (OFL).
+The real thing will always have better battery life!
+Copyleft MMXXVI

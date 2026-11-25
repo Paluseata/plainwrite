@@ -16,6 +16,8 @@ In other words, THIS IS VIBE CODED AI SLOP!!
 |---|---|---|
 | [`pwa/en`](pwa/en) | Web app (PWA) | English only; language packs can be downloaded or imported |
 | [`pwa/multi`](pwa/multi) | Web app (PWA) | Includes 48 language packs |
+| [`pwa/jp`](pwa/jp) | Web app (PWA) | ⚠️ Experimental. Plainwrite-J: Japanese, and English–Japanese, with Japanese input |
+| [`pwa/kr`](pwa/kr) | Web app (PWA) | ⚠️ Experimental. Plainwrite-K: Korean, and English–Korean, with Hangul input |
 | [`android`](android) | Android (APK) | English and multilingual build variants |
 | [`tauri`](tauri) | Desktop: Windows, Mac, Linux (Tauri 2) | English and multilingual editions |
 | [`experimental/godot`](experimental/godot) | Godot 3.6 port | ⚠️ Experimental, core port only |

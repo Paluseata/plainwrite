@@ -1,0 +1,158 @@
+[
+[
+"<section class=\"sheet\" id=\"cssSheet\" hidden aria-label=\"Custom CSS\">\n  <div class=\"pchead\"><span>Custom CSS</span><button id=\"cssClose\" type=\"button\">Close</button></div>",
+"<section class=\"sheet\" id=\"cssSheet\" hidden aria-label=\"사용자 CSS\">\n  <div class=\"pchead\"><span>사용자 CSS</span><button id=\"cssClose\" type=\"button\">닫기</button></div>"
+],
+[
+"placeholder=\"/* Your CSS here. It applies as you type. */\"",
+"placeholder=\"/* 여기에 CSS를 쓰세요. 치는 대로 적용됩니다. */\""
+],
+[
+"<button id=\"cssExample\" type=\"button\">Insert example</button>",
+"<button id=\"cssExample\" type=\"button\">예시 넣기</button>"
+],
+[
+"<button id=\"cssReset\" type=\"button\" class=\"danger\">Clear</button>",
+"<button id=\"cssReset\" type=\"button\" class=\"danger\">지우기</button>"
+],
+[
+"<p class=\"note\">Change colours with these variables in <code>:root{}</code>: --b1 --b2 (body), --k1 --k2 --kt (keys), --f1 --f2 --ft (file keys), --n1 --n2 (bottom keys), --bezel, --brand, --brandb, --pwr, --page. Or style any part directly: .device, .bezel, .lcd, .k, .k.file, .k.nav, .brandbar. Saved on this device; Clear undoes everything.</p>",
+"<p class=\"note\"><code>:root{}</code> 안의 변수로 색을 바꿉니다: --b1 --b2 (본체), --k1 --k2 --kt (글쇠), --f1 --f2 --ft (파일 글쇠), --n1 --n2 (아랫줄 글쇠), --bezel, --brand, --brandb, --pwr, --page. 또는 각 부분을 직접 꾸미세요: .device, .bezel, .lcd, .k, .k.file, .k.nav, .brandbar. 이 기기에 저장되며, 지우기로 모두 되돌립니다.</p>"
+],
+[
+"<div class=\"pchead\"><span>Keyboard layout</span><button id=\"kmClose\" type=\"button\">Close</button></div>\n  <div class=\"row\"><span>Layout</span>",
+"<div class=\"pchead\"><span>자판 배열</span><button id=\"kmClose\" type=\"button\">닫기</button></div>\n  <div class=\"row\"><span>배열</span>"
+],
+[
+"<p class=\"note\">Each key: big = normal (or the letter), top = with Shift, bottom right = with AltGr (Right Alt on Windows and Linux, Option on Mac). Layouts apply to physical keyboards; on-screen phone keyboards keep their own language.</p>",
+"<p class=\"note\">글쇠마다: 큰 글자 = 그냥 누를 때, 위 = Shift와 함께, 오른쪽 아래 = AltGr와 함께(Windows와 Linux는 오른쪽 Alt, Mac은 Option). 실물 키보드에만 적용되고, 휴대폰 화면 키보드는 원래 언어를 그대로 씁니다. 한글 자판은 제어판 → 한글 자판에서 고릅니다.</p>"
+],
+[
+"<div class=\"pchead\"><span>Custom screen size</span></div>\n  <div class=\"row\"><span>Shape</span>",
+"<div class=\"pchead\"><span>화면 크기 직접 정하기</span></div>\n  <div class=\"row\"><span>비율</span>"
+],
+[
+"<div class=\"row\"><span>Presets</span><span style=\"display:flex;gap:6px;flex-wrap:wrap\"><button type=\"button\" data-sz=\"16:9\">",
+"<div class=\"row\"><span>미리 정한 비율</span><span style=\"display:flex;gap:6px;flex-wrap:wrap\"><button type=\"button\" data-sz=\"16:9\">"
+],
+[
+"<p class=\"note\">Width : height of the screen. The text stays the same size; a bigger screen shows more lines. The screen shrinks to fit the window if needed.</p>",
+"<p class=\"note\">화면의 가로 : 세로. 글자 크기는 그대로이고, 화면이 크면 더 많은 줄이 보입니다. 필요하면 창에 맞게 줄어듭니다.</p>"
+],
+[
+"<button id=\"szCancel\" type=\"button\">Cancel</button>",
+"<button id=\"szCancel\" type=\"button\">취소</button>"
+],
+[
+"<button id=\"szSave\" type=\"button\" class=\"primary\">Use this size</button>",
+"<button id=\"szSave\" type=\"button\" class=\"primary\">이 크기로</button>"
+],
+[
+"<div class=\"pchead\"><span>Bevels</span></div>\n  <div class=\"row\"><span>Presets</span>",
+"<div class=\"pchead\"><span>모서리와 입체감</span></div>\n  <div class=\"row\"><span>미리 정한 모양</span>"
+],
+[
+"<p class=\"note\">Shapes and edges of the device. Changes show straight away and are saved; they work with every Device theme.</p>",
+"<p class=\"note\">본체의 모양과 가장자리. 바꾸는 대로 바로 보이고 저장되며, 모든 본체 테마에 적용됩니다.</p>"
+],
+[
+"<button id=\"bevReset\" type=\"button\" class=\"danger\">Reset</button>",
+"<button id=\"bevReset\" type=\"button\" class=\"danger\">되돌리기</button>"
+],
+[
+"<button id=\"bevDone\" type=\"button\" class=\"primary\">Done</button>",
+"<button id=\"bevDone\" type=\"button\" class=\"primary\">완료</button>"
+],
+[
+"<div class=\"pchead\"><span>Background</span></div>\n  <div class=\"row\"><span>Kind</span>",
+"<div class=\"pchead\"><span>배경</span></div>\n  <div class=\"row\"><span>종류</span>"
+],
+[
+"<option value=\"theme\">Plain (from Device theme)</option><option value=\"gradient\">Gradient</option>",
+"<option value=\"theme\">단색 (본체 테마)</option><option value=\"gradient\">그러데이션</option>"
+],
+[
+"<option value=\"pattern\">Pattern</option><option value=\"proc\">Generated</option><option value=\"image\">Picture</option>",
+"<option value=\"pattern\">무늬</option><option value=\"proc\">생성</option><option value=\"image\">그림</option>"
+],
+[
+"<div class=\"row\" id=\"bgDimRow\"><span>Dim</span>",
+"<div class=\"row\" id=\"bgDimRow\"><span>어둡게</span>"
+],
+[
+"<button id=\"bgReset\" type=\"button\" class=\"danger\">Reset</button>",
+"<button id=\"bgReset\" type=\"button\" class=\"danger\">되돌리기</button>"
+],
+[
+"<button id=\"bgDone\" type=\"button\" class=\"primary\">Done</button>",
+"<button id=\"bgDone\" type=\"button\" class=\"primary\">완료</button>"
+],
+[
+"<div class=\"pchead\"><span>Key colours</span></div>\n  <div class=\"row\"><span>Keys</span>",
+"<div class=\"pchead\"><span>글쇠 색</span></div>\n  <div class=\"row\"><span>글쇠</span>"
+],
+[
+"<div class=\"row\"><span>Key</span><input type=\"color\" id=\"kcBg\">",
+"<div class=\"row\"><span>바탕</span><input type=\"color\" id=\"kcBg\">"
+],
+[
+"<div class=\"row\"><span>Gradient</span><input type=\"checkbox\" id=\"kcG2on\">",
+"<div class=\"row\"><span>그러데이션</span><input type=\"checkbox\" id=\"kcG2on\">"
+],
+[
+"<div class=\"row\"><span>Text</span><input type=\"color\" id=\"kcFg\">",
+"<div class=\"row\"><span>글자</span><input type=\"color\" id=\"kcFg\">"
+],
+[
+"<p class=\"note\">Changes show straight away and are saved. Pick a whole row or one key; you can also tap a key on the device to pick it. A key's own colour wins over its row's, and Device themes stay underneath. Tick Gradient to fade into a second colour; Device body colours the case itself.</p>",
+"<p class=\"note\">바꾸는 대로 바로 보이고 저장됩니다. 줄 전체나 글쇠 하나를 고르세요. 본체의 글쇠를 눌러 골라도 됩니다. 글쇠 하나의 색이 그 줄의 색보다 앞서고, 본체 테마는 그 아래에 그대로 있습니다. 그러데이션을 켜면 두 번째 색으로 번집니다.</p>"
+],
+[
+"<button id=\"kcReset\" type=\"button\" class=\"danger\">Reset these</button><button id=\"kcResetAll\" type=\"button\">Reset all</button>",
+"<button id=\"kcReset\" type=\"button\" class=\"danger\">이것 되돌리기</button><button id=\"kcResetAll\" type=\"button\">모두 되돌리기</button>"
+],
+[
+"<button id=\"kcDone\" type=\"button\" class=\"primary\">Done</button>",
+"<button id=\"kcDone\" type=\"button\" class=\"primary\">완료</button>"
+],
+[
+"<div class=\"row\"><span>Name</span><input id=\"pmName\" maxlength=\"24\" placeholder=\"My palette\" autocomplete=\"off\"></div>",
+"<div class=\"row\"><span>이름</span><input id=\"pmName\" maxlength=\"24\" placeholder=\"내 팔레트\" autocomplete=\"off\"></div>"
+],
+[
+"<div class=\"row\"><span>Background</span><input type=\"color\" id=\"pmBg\">",
+"<div class=\"row\"><span>배경</span><input type=\"color\" id=\"pmBg\">"
+],
+[
+"<div class=\"row\"><span>Text</span><input type=\"color\" id=\"pmInk\">",
+"<div class=\"row\"><span>글자</span><input type=\"color\" id=\"pmInk\">"
+],
+[
+"<div class=\"row\"><span>Border</span><input type=\"checkbox\" id=\"pmBorder\">",
+"<div class=\"row\"><span>테두리</span><input type=\"checkbox\" id=\"pmBorder\">"
+],
+[
+"<div class=\"row\"><span>Glow</span><input type=\"checkbox\" id=\"pmGlow\"><span class=\"note\" style=\"margin:0\">soft light around letters</span></div>",
+"<div class=\"row\"><span>빛 번짐</span><input type=\"checkbox\" id=\"pmGlow\"><span class=\"note\" style=\"margin:0\">글자 둘레의 은은한 빛</span></div>"
+],
+[
+"<button id=\"pmSwap\" type=\"button\">Swap colors</button>",
+"<button id=\"pmSwap\" type=\"button\">색 바꾸기</button>"
+],
+[
+"<p class=\"note\">Dark mode shows this palette with the two colors swapped. Border is the frame around the screen; it applies to every palette straight away. Classic computer screens keep their own coloured border.</p>",
+"<p class=\"note\">다크 모드에서는 두 색을 바꿔서 보여 줍니다. 테두리는 화면 둘레의 틀이며 모든 팔레트에 바로 적용됩니다. 옛 컴퓨터 화면은 자기 테두리 색을 그대로 씁니다.</p>"
+],
+[
+"<button id=\"pmDelete\" type=\"button\" class=\"danger\">Delete</button><span style=\"flex:1\"></span><button id=\"pmCancel\" type=\"button\">Cancel</button><button id=\"pmSave\" type=\"button\" class=\"primary\">Save</button>",
+"<button id=\"pmDelete\" type=\"button\" class=\"danger\">지우기</button><span style=\"flex:1\"></span><button id=\"pmCancel\" type=\"button\">취소</button><button id=\"pmSave\" type=\"button\" class=\"primary\">저장</button>"
+],
+[
+"<div class=\"pchead\"><span>Connected computer</span><div><button id=\"saveBtn\">Save .txt</button><button id=\"copyBtn\">Copy</button><button id=\"pcClear\">Clear</button><button id=\"pcClose\">Close</button></div></div>",
+"<div class=\"pchead\"><span>연결된 컴퓨터</span><div><button id=\"saveBtn\">.txt 저장</button><button id=\"copyBtn\">복사</button><button id=\"pcClear\">지우기</button><button id=\"pcClose\">닫기</button></div></div>"
+],
+[
+"<p id=\"pcNote\">Type into computer sends your file as keystrokes. Here they land in this box, ready to copy or save.</p>",
+"<p id=\"pcNote\">컴퓨터에 입력은 파일을 글쇠 입력으로 보냅니다. 여기서는 이 상자에 들어오므로, 복사하거나 저장할 수 있습니다.</p>"
+]
+]

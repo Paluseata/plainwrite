@@ -1,0 +1,9 @@
+プレインライトＪ
+${APP_VER}
+懐かしくて簡単な
+ワープロ専用機シミュレーター
+AlphaSmart Neo と、キングジムのポメラにならって。
+Anthropic Claude で作成。Renaissance Learning、キングジムとは関係ありません。
+辞書: SKK-JISYO.L (GPL v2 以降)
+書体: DotGothic16 (OFL) をもとにした Pixel Gothic J
+Copyleft MMXXVI

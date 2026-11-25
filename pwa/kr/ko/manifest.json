@@ -1,0 +1,30 @@
+{
+  "name": "Plainwrite-K",
+  "short_name": "Plainwrite-K",
+  "lang": "ko",
+  "description": "한글 입력이 들어 있는 레트로 워드프로세서. 자동 저장되는 파일 여덟 개, 오프라인에서도 동작.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#121417",
+  "theme_color": "#121417",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -13,7 +13,9 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
+    // Only clear this edition's own old caches: the other editions on the same site keep theirs.
+    const mine = CACHE.replace(/-v[\d.]+(-\d+)?$/, '-v');
+    await Promise.all(keys.filter(k => k !== CACHE && k.startsWith(mine)).map(k => caches.delete(k)));
     await self.clients.claim();
   })());
 });
