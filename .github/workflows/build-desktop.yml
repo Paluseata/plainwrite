@@ -1,12 +1,22 @@
 # Builds both desktop editions (English and Multilingual) for Linux, Windows and macOS on GitHub's machines.
-# Run it from the Actions tab ("Run workflow"), or push a tag like v1.0.4.
+# Runs by itself whenever tauri/ or this workflow changes on main, and checks pull requests too.
+# You can also run it from the Actions tab ("Run workflow"), or push a tag like v1.0.8.
 # The installers appear under the run's Artifacts.
 name: Build desktop apps
 
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     tags: ['v*']
+    paths: ['tauri/**', '.github/workflows/build-desktop.yml']
+  pull_request:
+    paths: ['tauri/**', '.github/workflows/build-desktop.yml']
+
+# a newer push cancels a build of the same branch that's still running
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:

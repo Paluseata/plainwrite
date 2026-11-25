@@ -29,12 +29,13 @@ No tools needed: GitHub can do the building.
 - **Web app:** published on GitHub Pages at
   [paluseata.github.io/plainwrite](https://paluseata.github.io/plainwrite/) by the
   **Publish web app** workflow, every time `pwa/` changes.
-- **Desktop (Tauri):** Actions tab → **Build desktop apps** → **Run workflow**. Installers for
-  Windows, macOS and Linux appear under the finished run's **Artifacts**.
-- **Android:** Actions tab → **Build Android app** → **Run workflow**. Both APKs appear under the
-  finished run's **Artifacts**.
+- **Desktop (Tauri):** the **Build desktop apps** workflow runs by itself whenever `tauri/` changes on
+  `main`. Installers for Windows, macOS and Linux appear under the finished run's **Artifacts**.
+- **Android:** the **Build Android app** workflow runs by itself whenever `android/` changes on `main`.
+  Both APKs appear under the finished run's **Artifacts**.
 
-Pushing a tag like `v1.0.4` runs both app builds at once.
+Both app builds also check pull requests, and you can start either one by hand from the Actions tab
+(**Run workflow**). Pushing a tag like `v1.0.8` runs both at once.
 
 ## License
 
