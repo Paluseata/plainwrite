@@ -1,7 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Plainwrite" xmlns:c2pa="http://c2pa.org/manifest">
   <title>Plainwrite</title>
-  <!-- Background -->
-  <rect width="512" height="512" fill="#121417"/>
+  <!-- No background: the device sits on a transparent page -->
   <!-- Device body -->
   <rect x="40" y="104" width="432" height="304" rx="44" fill="#2b3037"/>
   <!-- Screen -->

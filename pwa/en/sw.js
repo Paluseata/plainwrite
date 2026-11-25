@@ -1,5 +1,5 @@
 // Plainwrite service worker: everything is cached on first visit, then served from the device.
-const CACHE = 'plainwrite-en-v108';
+const CACHE = 'plainwrite-en-v109';
 const CORE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil((async () => {

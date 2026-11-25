@@ -13,8 +13,8 @@ android {
         // Chromium 60+ WebView, built into Android 8+ and reachable on 5.0–7.x with one Play Store update.
         minSdk = 21
         targetSdk = 34
-        versionCode = 108
-        versionName = "1.08"
+        versionCode = 109
+        versionName = "1.09"
     }
 
     // Two editions, like the web download: Build Variants panel → englishDebug / multilingualDebug

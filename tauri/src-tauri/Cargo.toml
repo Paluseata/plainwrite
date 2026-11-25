@@ -1,6 +1,6 @@
 [package]
 name = "plainwrite"
-version = "1.0.8"
+version = "1.0.9"
 description = "Retro minimalist word processor inspired by the AlphaSmart Neo"
 edition = "2021"
 

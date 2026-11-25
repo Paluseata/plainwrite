@@ -2,7 +2,7 @@ extends Node
 # Settings, the eight files, and the fixed tables (text sizes, fonts, screen palettes).
 # Everything is kept in user://plainwrite.json, written a quarter of a second after the last change.
 
-const VERSION = "Godot port 1.08"
+const VERSION = "Godot port 1.09"
 const SAVE_PATH = "user://plainwrite.json"
 
 # Text sizes: how many lines fit on the screen, and roughly how many characters across.
