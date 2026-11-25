@@ -55,8 +55,8 @@ jobs:
         run: |
           mkdir -p release
           v="${GITHUB_REF_NAME#v}"
-          cp app/build/outputs/apk/english/debug/*.apk "release/Plainwrite-${v}-android-english.apk"
-          cp app/build/outputs/apk/multilingual/debug/*.apk "release/Plainwrite-${v}-android-multilingual.apk"
+          cp app/build/outputs/apk/english/debug/*.apk "release/Plainwrite-English_${v}_android.apk"
+          cp app/build/outputs/apk/multilingual/debug/*.apk "release/Plainwrite-Multilingual_${v}_android.apk"
 
       - name: Attach the APKs to the release
         if: startsWith(github.ref, 'refs/tags/')

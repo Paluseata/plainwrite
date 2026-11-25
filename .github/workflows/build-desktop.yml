@@ -55,11 +55,15 @@ jobs:
       - run: npm run build
       - name: Keep the English installers
         shell: bash
-        run: mkdir -p out/english && cp -r src-tauri/target/release/bundle/. out/english/ && rm -rf src-tauri/target/release/bundle
+        run: |
+          mkdir -p out/english && cp -r src-tauri/target/release/bundle/. out/english/ && rm -rf src-tauri/target/release/bundle
+          bash ../.github/scripts/name-installers.sh out/english English
       - run: npm run build:multilingual
       - name: Keep the Multilingual installers
         shell: bash
-        run: mkdir -p out/multilingual && cp -r src-tauri/target/release/bundle/. out/multilingual/
+        run: |
+          mkdir -p out/multilingual && cp -r src-tauri/target/release/bundle/. out/multilingual/
+          bash ../.github/scripts/name-installers.sh out/multilingual Multilingual
 
       - uses: actions/upload-artifact@v4
         with:
