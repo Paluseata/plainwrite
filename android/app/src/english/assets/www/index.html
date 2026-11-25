@@ -2165,9 +2165,9 @@ const BUNDLE=null;   // build setting: the Multilingual edition sets this to 'la
 const PACK_KEY='plainwrite-langs-v1';
 // Editions without bundled packs download them from the project's GitHub repository: the copy published next to
 // this one on GitHub Pages first, then two CDNs. Nothing is fetched until the Language packs screen is opened.
-const PACK_REMOTE=['../multilingual/langs/all.json',
-  'https://cdn.jsdelivr.net/gh/Paluseata/plainwrite@main/pwa/multilingual/langs/all.json',
-  'https://raw.githubusercontent.com/Paluseata/plainwrite/main/pwa/multilingual/langs/all.json'];
+const PACK_REMOTE=['../multi/langs/all.json',
+  'https://cdn.jsdelivr.net/gh/Paluseata/plainwrite@main/pwa/multi/langs/all.json',
+  'https://raw.githubusercontent.com/Paluseata/plainwrite/main/pwa/multi/langs/all.json'];
 let PACKS={},bundle=null,remote=null,remoteBusy=false,packSel=0,packMsg='';
 try{PACKS=JSON.parse(localStorage.getItem(PACK_KEY)||'{}')||{}}catch(e){PACKS={}}
 const CORE_KBS=KEYBOARDS.length;

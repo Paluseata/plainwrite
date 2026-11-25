@@ -4,7 +4,7 @@
   "version": "1.0.8",
   "identifier": "app.plainwrite.desktop",
   "build": {
-    "frontendDist": "../www/english"
+    "frontendDist": "../www/en"
   },
   "app": {
     "windows": [],

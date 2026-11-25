@@ -91,7 +91,7 @@ dictionaries and, in the English edition, language packs.
 
 | Path | What it is |
 |---|---|
-| `www/english`, `www/multilingual` | The two editions of the web app, exactly as published |
+| `www/en`, `www/multi` | The two editions of the web app, exactly as published |
 | `src-tauri/src/lib.rs` | The window (frameless or normal), moving, minimising and closing it, the Save dialog and full screen, and the small script that links them to the web app |
 | `src-tauri/src/main.rs` | Starts the app (and the Linux NVIDIA fix) |
 | `src-tauri/tauri.conf.json` | Name, version, app id, icons (English edition) |

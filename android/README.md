@@ -44,7 +44,7 @@ to move writing across, use Send → Save as text file in one and paste it into 
 ## Updating the web part
 
 The web app lives in `app/src/english/assets/www/` and `app/src/multilingual/assets/www/`. To update,
-replace those folders with the contents of `pwa/english/` / `pwa/multilingual/` from the repo root,
+replace those folders with the contents of `pwa/en/` / `pwa/multi/` from the repo root,
 and bump `versionCode` in `app/build.gradle.kts`.
 
 The web app spots the Android shell by `window.PlainwriteAndroid` (see `MainActivity.kt`, class `Bridge`):

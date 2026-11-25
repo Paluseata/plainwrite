@@ -14,8 +14,8 @@ In other words, THIS IS VIBE CODED AI SLOP!!
 
 | Folder | Platform | Notes |
 |---|---|---|
-| [`pwa/english`](pwa/english) | Web app (PWA) | English only; language packs can be downloaded or imported |
-| [`pwa/multilingual`](pwa/multilingual) | Web app (PWA) | Includes 48 language packs |
+| [`pwa/en`](pwa/en) | Web app (PWA) | English only; language packs can be downloaded or imported |
+| [`pwa/multi`](pwa/multi) | Web app (PWA) | Includes 48 language packs |
 | [`android`](android) | Android (APK) | English and multilingual build variants |
 | [`tauri`](tauri) | Desktop: Windows, Mac, Linux (Tauri 2) | English and multilingual editions |
 | [`experimental/godot`](experimental/godot) | Godot 3.6 port | ⚠️ Experimental, core port only |
@@ -41,4 +41,4 @@ Pushing a tag like `v1.0.4` runs both app builds at once.
 The code is under the [MIT License](LICENSE).
 
 The bundled fonts keep their own licences, most of them the SIL Open Font License 1.1.
-See the **Fonts** section of [`pwa/english/README.md`](pwa/english/README.md) for the full list.
+See the **Fonts** section of [`pwa/en/README.md`](pwa/en/README.md) for the full list.

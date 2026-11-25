@@ -13,9 +13,9 @@ large language model by Anthropic.
 
 ## Editions
 
-- **English** (plainwrite-english.zip): English-only single language edition. Other languages can
+- **English** (`pwa/en`): English-only single language edition. Other languages can
   be added later with Control Panel → Language packs… → Import language pack… and a pack file.
-- **Multilingual** (plainwrite-multilingual.zip): The same app, plus 48 language packs in `langs/`.
+- **Multilingual** (`pwa/multi`): The same app, plus 48 language packs in `langs/`.
   On first start, every pack is installed and the menu language follows the system language when
   there's a match, otherwise English is used. Packs can be ticked off and on again in Control Panel.
 

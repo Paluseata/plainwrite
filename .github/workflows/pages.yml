@@ -1,5 +1,10 @@
-# Publishes the web app (PWA) on GitHub Pages whenever pwa/ changes on main:
-#   https://<user>.github.io/<repo>/english/  and  https://<user>.github.io/<repo>/multilingual/
+# Publishes the web app (PWA) on GitHub Pages whenever pwa/ changes on main.
+#   pwa/index.html -> /        (landing page)
+#   pwa/en/        -> /en/     (English)
+#   pwa/multi/     -> /multi/  (Multilingual)
+#   pwa/jp/        -> /j/      (Plainwrite-J, published once the folder exists)
+#   pwa/kr/        -> /k/      (Plainwrite-K, published once the folder exists)
+# The old /english/ and /multilingual/ addresses redirect to the new ones.
 # One-time setup: repo Settings → Pages → Build and deployment → Source: GitHub Actions.
 name: Publish web app
 
@@ -30,9 +35,19 @@ jobs:
       - name: Assemble the site
         run: |
           mkdir _site
-          cp -r pwa/english _site/english
-          cp -r pwa/multilingual _site/multilingual
+          cp -r pwa/en _site/en
+          cp -r pwa/multi _site/multi
+          if [ -d pwa/jp ]; then cp -r pwa/jp _site/j; fi
+          if [ -d pwa/kr ]; then cp -r pwa/kr _site/k; fi
           rm -f _site/*/README.md
+
+          # Redirect the old addresses to the new ones
+          redirect() {
+            mkdir -p "_site/$1"
+            printf '<!DOCTYPE html><meta charset="utf-8"><title>Plainwrite</title><meta http-equiv="refresh" content="0; url=../%s/"><link rel="canonical" href="../%s/"><a href="../%s/">Plainwrite has moved here.</a>\n' "$2" "$2" "$2" > "_site/$1/index.html"
+          }
+          redirect english en
+          redirect multilingual multi
           cp pwa/index.html _site/index.html
           cp logo/plainwrite-wordmark-light.svg logo/plainwrite-icon.svg _site/
 
