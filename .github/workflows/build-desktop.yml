@@ -58,12 +58,32 @@ jobs:
         run: |
           mkdir -p out/english && cp -r src-tauri/target/release/bundle/. out/english/ && rm -rf src-tauri/target/release/bundle
           bash ../.github/scripts/name-installers.sh out/english English
+      - name: Keep the portable English app (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $v = (Get-Content src-tauri/tauri.conf.json -Raw | ConvertFrom-Json).version
+          $dir = "portable-tmp/Plainwrite English"
+          New-Item -ItemType Directory -Force $dir, out/english/portable | Out-Null
+          Copy-Item src-tauri/target/release/plainwrite.exe "$dir/Plainwrite.exe"
+          Compress-Archive -Path $dir -DestinationPath "out/english/portable/Plainwrite-English_${v}_x64-portable.zip" -Force
+          Remove-Item -Recurse -Force portable-tmp
       - run: npm run build:multilingual
       - name: Keep the Multilingual installers
         shell: bash
         run: |
           mkdir -p out/multilingual && cp -r src-tauri/target/release/bundle/. out/multilingual/
           bash ../.github/scripts/name-installers.sh out/multilingual Multilingual
+      - name: Keep the portable Multilingual app (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $v = (Get-Content src-tauri/tauri.conf.json -Raw | ConvertFrom-Json).version
+          $dir = "portable-tmp/Plainwrite Multilingual"
+          New-Item -ItemType Directory -Force $dir, out/multilingual/portable | Out-Null
+          Copy-Item src-tauri/target/release/plainwrite.exe "$dir/Plainwrite Multilingual.exe"
+          Compress-Archive -Path $dir -DestinationPath "out/multilingual/portable/Plainwrite-Multilingual_${v}_x64-portable.zip" -Force
+          Remove-Item -Recurse -Force portable-tmp
 
       - uses: actions/upload-artifact@v4
         with:
@@ -75,6 +95,7 @@ jobs:
             tauri/out/*/msi/*.msi
             tauri/out/*/nsis/*.exe
             tauri/out/*/dmg/*.dmg
+            tauri/out/*/portable/*.zip
           if-no-files-found: ignore
 
       - name: Attach the installers to the release
@@ -88,3 +109,4 @@ jobs:
             tauri/out/*/msi/*.msi
             tauri/out/*/nsis/*.exe
             tauri/out/*/dmg/*.dmg
+            tauri/out/*/portable/*.zip
